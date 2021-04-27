@@ -4,6 +4,7 @@
 
 #include <StateMachine.h>
 #include "GameWindow.h"
+#include "GamePlay.h"
 
 using namespace sf;
 
@@ -18,6 +19,7 @@ StateMachine GameWindow::stateMachine;
 void GameWindow::init() {
     logger.log("Game Started");
     window.create(VideoMode(1280, 720), "Namco PacMan");
+    stateMachine.addState(new GamePlay);
 }
 
 /**

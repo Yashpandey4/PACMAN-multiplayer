@@ -1,5 +1,5 @@
 /**
- * This file defines game states
+ * This file contains boilerplate for a generic game state
  */
 
 #include "State.h"
