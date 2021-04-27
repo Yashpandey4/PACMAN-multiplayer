@@ -2,12 +2,14 @@
  * This file contains the main framework or the game engine. The class manages the Render Window.
  */
 
+#include <StateMachine.h>
 #include "GameWindow.h"
 
 using namespace sf;
 
 RenderWindow GameWindow::window;
 Logger GameWindow::logger("GameWindow");
+StateMachine GameWindow::stateMachine;
 
 /**
  * Initialise Game window with desired in-game resolution
@@ -38,8 +40,15 @@ void GameWindow::handleEvents() {
                 logger.log("Game Ended. Exiting.");
                 window.close();
                 break;
+            case Event::KeyPressed:
+                stateMachine.keyPressed(event.key.code);
+                break;
+            case Event::KeyReleased:
+                stateMachine.keyReleased(event.key.code);
+                break;
         }
     }
+    stateMachine.loop();
 }
 
 /**
@@ -47,5 +56,6 @@ void GameWindow::handleEvents() {
  */
 void GameWindow::render() {
     window.clear(Color::White);
+    stateMachine.render(& window);
     window.display();
 }

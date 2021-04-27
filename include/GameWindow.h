@@ -7,6 +7,8 @@
 
 #include "SFML/Graphics.hpp"
 #include "Logger.h"
+#include "StateMachine.h"
+
 using namespace sf;
 
 class GameWindow
@@ -14,6 +16,7 @@ class GameWindow
 private:
     static RenderWindow window;
     static Logger logger;
+    static StateMachine stateMachine;
 
 public:
     static void init();
