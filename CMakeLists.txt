@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -lsfml-graphics -lsfml-window -lsfml-system")
 
 include_directories(include)
-add_executable(PACMAN_2Player src/GameWindow.cpp src/Main.cpp include/GameWindow.h)
+add_executable(PACMAN_2Player src/GameWindow.cpp src/Main.cpp include/GameWindow.h include/Logger.h src/Logger.cpp)
 
 set(SFML_INCLUDE_DIR "include/SFML-2.5.1/include")
 set(SFML_LIBRARY_DIR "include/SFML-2.5.1/lib")

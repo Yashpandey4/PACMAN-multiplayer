@@ -7,12 +7,14 @@
 using namespace sf;
 
 RenderWindow GameWindow::window;
+Logger GameWindow::logger("GameWindow");
 
 /**
  * Initialise Game window with desired in-game resolution
  * @TODO: Take the resolution as a constructor (command line) parameter
  */
 void GameWindow::init() {
+    logger.log("Game Started");
     window.create(VideoMode(1280, 720), "Namco PacMan");
 }
 
@@ -33,11 +35,11 @@ void GameWindow::handleEvents() {
     {
         switch (event.type) {
             case Event::Closed:
+                logger.log("Game Ended. Exiting.");
                 window.close();
                 break;
         }
     }
-
 }
 
 /**
