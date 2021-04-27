@@ -8,3 +8,6 @@ Find exact project details [here](https://www.cse.iitd.ac.in/~rijurekha/cop290_2
 - **include:** All project header files. All necessary third-party header files that do not exist under /usr/local/include are also placed here.
 - **lib:** Any libs that get compiled by the project, third party or any needed in development. Prior to deployment, third party libraries get moved to /usr/local/lib where they belong, leaving the project clean enough to compile on our Linux deployment servers. I really use this to test different library versions than the standard.
 - **src:** The application and only the application’s source files.
+
+## Dependencies
+1. SFML: [Link 1](https://www.sfml-dev.org/tutorials/2.5/start-linux.php), [Link 2](https://laptrinhx.com/install-sfml-2-5-1-on-ubuntu-18-04-and-clion-184157703/)
