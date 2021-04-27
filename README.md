@@ -2,6 +2,7 @@
 Find exact project details [here](https://www.cse.iitd.ac.in/~rijurekha/cop290_2021.html) under task 2.
 
 ## Project Structure
+- **assets:** All non-code files required for program execution go here. These are static files and needn't be compiled.
 - **bin:** The output executables go here, both for the app and for any tests and spikes.
 - **build:** This folder contains all object files, and is removed on a clean.
 - **doc:** Any notes, like my assembly notes and configuration files, are here. I decided to create the development and production config files in here instead of in a separate config folder as they “document” the configuration.
@@ -10,4 +11,10 @@ Find exact project details [here](https://www.cse.iitd.ac.in/~rijurekha/cop290_2
 - **src:** The application and only the application’s source files.
 
 ## Dependencies
-1. SFML: [Link 1](https://www.sfml-dev.org/tutorials/2.5/start-linux.php), [Link 2](https://laptrinhx.com/install-sfml-2-5-1-on-ubuntu-18-04-and-clion-184157703/)
+1. SFML: Installation Instructions - [Link 1](https://www.sfml-dev.org/tutorials/2.5/start-linux.php), [Link 2](https://laptrinhx.com/install-sfml-2-5-1-on-ubuntu-18-04-and-clion-184157703/)
+
+## Resources
+1. [Sprite Cow](http://www.spritecow.com/): Very useful for extracting spriteFile from the sprite sheet
+
+## Miscellaneous
+1. Name functions as `CamelCase` format and variables with `camelCase` (first letter small)
