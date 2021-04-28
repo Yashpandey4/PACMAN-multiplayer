@@ -8,11 +8,17 @@
 #include "State.h"
 #include "Logger.h"
 #include "Maze.h"
+#include "Character.h"
 
 class GamePlay : public State {
 private:
     Logger* logger;
     Maze* maze;
+    Character* pacMan;
+    Character* redGhost;
+    Character* pinkGhost;
+    Character* blueGhost;
+    Character* orangeGhost;
 
 public:
     void init();

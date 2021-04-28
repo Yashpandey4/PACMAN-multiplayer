@@ -9,14 +9,14 @@
 class Maze
 {
 public:
-    static const int SizeX = 28;
-    static const int SizeY = 36;
+    static const int SIZE_X = 28;
+    static const int SIZE_Y = 36;
 
     Maze();
-    int getTileCode(int x, int y);
+    int getCellCode(int x, int y);
 
 private:
-    int tiles[SizeX][SizeY];
+    int cells[SIZE_X][SIZE_Y];
 };
 
 
