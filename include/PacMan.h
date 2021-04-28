@@ -15,6 +15,7 @@ private:
 
 public:
     PacMan();
+    constexpr static const float PACMAN_SPEED = 0.04f;
     const std::queue<Direction> &getDirections() const;
     void queueDirection(Direction direction);
     void move();

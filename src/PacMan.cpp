@@ -37,16 +37,16 @@ void PacMan::move() {
     if(!directions.empty()) {
         switch (directions.front()) {
             case Direction::UP:
-                Character::move(0, -1);
+                Character::move(0, -PACMAN_SPEED);
                 break;
             case Direction::DOWN:
-                Character::move(0, 1);
+                Character::move(0, PACMAN_SPEED);
                 break;
             case Direction::LEFT:
-                Character::move(-1, 0);
+                Character::move(-PACMAN_SPEED, 0);
                 break;
             case Direction::RIGHT:
-                Character::move(1, 0);
+                Character::move(PACMAN_SPEED, 0);
                 break;
         }
     }
@@ -65,7 +65,7 @@ const std::queue<Direction> &PacMan::getDirections() const {
  */
 void PacMan::stopMoving() {
     if(directions.size() > 1) {
-        if((int)(getScreenPositionX() + 8) % 16 == 0 && (int)(getScreenPositionY() + 8) % 16 == 0) {
+        if((int)(screenPositionX + 8) % 16 == 0 && (int)(screenPositionY + 8) % 16 == 0) {
             switch (directions.front())
             {
                 case Direction::UP:

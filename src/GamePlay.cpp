@@ -111,7 +111,7 @@ void GamePlay::keyReleased(int code) {}
  * @return True if pacman can move, false otherwise
  */
 bool GamePlay::isPacManMovementAllowed() {
-    if (pacMan->getDirections().empty()) {
+    if (!pacMan->getDirections().empty()) {
         switch (pacMan->getDirections().front()) {
             case Direction::UP:
                 return !maze->isCellBlockingCharacter(pacMan->getCellX(), pacMan->getCellY() - 1);
