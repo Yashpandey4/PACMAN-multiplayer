@@ -11,15 +11,21 @@
 class LoadSprites {
 private:
     static sf::Texture spriteFile;
+    // static std::map<int, Animation> animations;
     static sf::Texture maze;
     static Logger logger;
-
-    // static std::map<int, sf::Sprite*> sprites;
-    // static std::map<int, Animation> animations;
+    static void loadSpriteFromFile(int key, int rectLeft, int rectTop);
 
 public:
     static void load();
     static sf::Sprite* mazePieces[];
+    static std::map<int, sf::Sprite*> spritesMap;
+
+    static const int PAC_MAN;
+    static const int BLUE_GHOST;
+    static const int ORANGE_GHOST;
+    static const int PINK_GHOST;
+    static const int RED_GHOST;
 };
 
 
