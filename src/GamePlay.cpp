@@ -72,7 +72,21 @@ void GamePlay::render(RenderWindow *window) {
  * @param code - key code
  */
 void GamePlay::keyPressed(int code) {
-    logger->log("Key Pressed: "+to_string(code));
+    // logger->log("Key Pressed: "+to_string(code));
+    switch (code) {
+        case Keyboard::Up:
+            pacMan->move(0, -1);
+            break;
+        case Keyboard::Down:
+            pacMan->move(0, 1);
+            break;
+        case Keyboard::Left:
+            pacMan->move(-1, 0);
+            break;
+        case Keyboard::Right:
+            pacMan->move(1, 0);
+            break;
+    }
 }
 
 /**

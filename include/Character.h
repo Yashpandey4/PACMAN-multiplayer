@@ -25,7 +25,7 @@ private:
 
 public:
     Character(int cellPositionX, int cellPositionY);
-
+    void move(float x, float y);
 };
 
 #endif //PACMAN_2PLAYER_CHARACTER_H
