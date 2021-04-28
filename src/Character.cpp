@@ -3,6 +3,7 @@
  */
 
 #include "Character.h"
+#include <cmath>
 
 /**
  * Constructor for a character object
@@ -56,5 +57,11 @@ int Character::getCellY() const {
 void Character::move(float x, float y) {
     screenPositionX += x;
     screenPositionY += y;
+
+    if ((int)(screenPositionX + 8) % 16 == 0 && (int)(screenPositionY + 8) % 16 == 0)
+    {
+        cellX = (int) round((screenPositionX - 8) / 16);
+        cellY = (int) round((screenPositionY - 8) / 16);
+    }
 }
 

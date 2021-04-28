@@ -2,6 +2,7 @@
  * First State in the game, demonstrates start of the game play
  */
 
+#include "PacMan.h"
 #include "GamePlay.h"
 #include "LoadSprites.h"
 #include "Maze.h"
@@ -15,7 +16,7 @@ using namespace sf;
 void GamePlay::init() {
     logger = new Logger("GamePlay");
     maze = new Maze();
-    pacMan = new Character(13,26);
+    pacMan = new PacMan();
     redGhost = new Character(13,14);
     pinkGhost = new Character(13,17);
     blueGhost = new Character(11,17);
@@ -26,7 +27,17 @@ void GamePlay::init() {
 /**
  * Specifies actions which keep the play state of the game running in a loop
  */
-void GamePlay::loop() {}
+void GamePlay::loop() {
+    if(isPacManMovementAllowed())
+        pacMan->move();
+    else
+        pacMan->stopMoving();
+
+    if (maze->isMazeIntersection(pacMan->getCellX(), pacMan->getCellY()))
+        pacMan->stopMoving();
+
+    maze->removePellets(pacMan);
+}
 
 /**
  * Render sprites and stuff on the game window
@@ -75,16 +86,16 @@ void GamePlay::keyPressed(int code) {
     // logger->log("Key Pressed: "+to_string(code));
     switch (code) {
         case Keyboard::Up:
-            pacMan->move(0, -1);
+            pacMan->queueDirection(Direction::UP);
             break;
         case Keyboard::Down:
-            pacMan->move(0, 1);
+            pacMan->queueDirection(Direction::DOWN);
             break;
         case Keyboard::Left:
-            pacMan->move(-1, 0);
+            pacMan->queueDirection(Direction::LEFT);
             break;
         case Keyboard::Right:
-            pacMan->move(1, 0);
+            pacMan->queueDirection(Direction::RIGHT);
             break;
     }
 }
@@ -94,3 +105,29 @@ void GamePlay::keyPressed(int code) {
  * @param code - key code
  */
 void GamePlay::keyReleased(int code) {}
+
+/**
+ * Determines if the PacMan character is free to move
+ * @return True if pacman can move, false otherwise
+ */
+bool GamePlay::isPacManMovementAllowed() {
+    if (pacMan->getDirections().empty()) {
+        switch (pacMan->getDirections().front()) {
+            case Direction::UP:
+                return !maze->isCellBlockingCharacter(pacMan->getCellX(), pacMan->getCellY() - 1);
+                break;
+            case Direction::DOWN:
+                return !maze->isCellBlockingCharacter(pacMan->getCellX(), pacMan->getCellY() + 1);
+                break;
+            case Direction::LEFT:
+                return !maze->isCellBlockingCharacter(pacMan->getCellX() - 1, pacMan->getCellY());
+                break;
+            case Direction::RIGHT:
+                return !maze->isCellBlockingCharacter(pacMan->getCellX() + 1, pacMan->getCellY());
+                break;
+        }
+    }
+    return true;
+}
+
+

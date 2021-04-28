@@ -5,6 +5,7 @@
 #ifndef PACMAN_2PLAYER_MAZE_H
 #define PACMAN_2PLAYER_MAZE_H
 
+#include "PacMan.h"
 
 class Maze
 {
@@ -14,6 +15,9 @@ public:
 
     Maze();
     int getCellCode(int x, int y);
+    bool isCellBlockingCharacter(int x, int y);
+    static bool isMazeIntersection(int x, int y);
+    void removePellets(PacMan* pacMan);
 
 private:
     int cells[SIZE_X][SIZE_Y];

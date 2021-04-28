@@ -7,9 +7,18 @@
 
 
 class Character {
-private:
+protected:
     float screenPositionX;
+
+    float screenPositionY;
+
+    int cellX;
+
+    int cellY;
+
 public:
+    Character(int cellPositionX, int cellPositionY);
+
     float getScreenPositionX() const;
 
     float getScreenPositionY() const;
@@ -18,13 +27,6 @@ public:
 
     int getCellY() const;
 
-private:
-    float screenPositionY;
-    int cellX;
-    int cellY;
-
-public:
-    Character(int cellPositionX, int cellPositionY);
     void move(float x, float y);
 };
 

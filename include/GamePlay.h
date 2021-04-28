@@ -8,17 +8,20 @@
 #include "State.h"
 #include "Logger.h"
 #include "Maze.h"
+#include "PacMan.h"
 #include "Character.h"
 
 class GamePlay : public State {
 private:
     Logger* logger;
     Maze* maze;
-    Character* pacMan;
+    PacMan* pacMan;
     Character* redGhost;
     Character* pinkGhost;
     Character* blueGhost;
     Character* orangeGhost;
+
+    bool isPacManMovementAllowed();
 
 public:
     void init();

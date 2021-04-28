@@ -16,6 +16,7 @@ Find exact project details [here](https://www.cse.iitd.ac.in/~rijurekha/cop290_2
 ## Resources
 1. [Sprite Cow](http://www.spritecow.com/): Very useful for extracting spriteFile from the sprite sheet
 2. The [ghosts in PacMan](https://villains.fandom.com/wiki/Ghosts_(Pac-Man) have names: Inky (Blue), Pinky (Pink), Blinky (Red), Sue (Purple) and Clyde (Orange), and they each have different behaviours which must be coded in the game. Read more [here](https://dev.to/code2bits/pac-man-patterns--ghost-movement-strategy-pattern-1k1a).
+3. The dots are called PacDots/Cookies/Pellets and large flashing dots called "Power Pellets". 
 
 ## Miscellaneous
 1. Name Classes as `CamelCase` format and functions/variables as `camelCase` (first letter small). Constants are named as `FIRST_LAST`.
