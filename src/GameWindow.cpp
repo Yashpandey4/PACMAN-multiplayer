@@ -5,6 +5,7 @@
 #include <StateMachine.h>
 #include "GameWindow.h"
 #include "GamePlay.h"
+#include "LoadSprites.h"
 
 using namespace sf;
 
@@ -18,7 +19,8 @@ StateMachine GameWindow::stateMachine;
  */
 void GameWindow::init() {
     logger.log("Game Started");
-    window.create(VideoMode(1280, 720), "Namco PacMan");
+    LoadSprites::load();
+    window.create(VideoMode(448, 596), "Namco PacMan");
     stateMachine.addState(new GamePlay);
 }
 
@@ -57,7 +59,7 @@ void GameWindow::handleEvents() {
  * Renders and displaying the game-window
  */
 void GameWindow::render() {
-    window.clear(Color::White);
+    window.clear(Color::Black);
     stateMachine.render(& window);
     window.display();
 }

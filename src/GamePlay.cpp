@@ -1,5 +1,5 @@
 /**
- * First State in the game, demonstrates start of the gameplay
+ * First State in the game, demonstrates start of the game play
  */
 
 #include "GamePlay.h"
@@ -11,8 +11,8 @@ using namespace sf;
 
 void GamePlay::init() {
     logger = new Logger("GamePlay");
-    logger->log("Playing State Initialised");
     maze = new Maze();
+    logger->log("Playing State Initialised");
 }
 
 void GamePlay::loop() {}
