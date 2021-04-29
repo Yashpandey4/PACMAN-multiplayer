@@ -33,7 +33,7 @@ PacMan::PacMan() : Character(13, 26) {
 /**
  * Defines movement rules for the PacMan character object in the game
  */
-void PacMan::move() {
+void PacMan::movePacman() {
     if(!directions.empty()) {
         switch (directions.front()) {
             case Direction::UP:
@@ -63,7 +63,7 @@ const std::queue<Direction> &PacMan::getDirections() const {
 /**
  * Stops pacman from going through walls or exiting the game screen
  */
-void PacMan::stopMoving() {
+void PacMan::stopPacman() {
     if(directions.size() > 1) {
         if((int)(screenPositionX + 8) % 16 == 0 && (int)(screenPositionY + 8) % 16 == 0) {
             switch (directions.front())

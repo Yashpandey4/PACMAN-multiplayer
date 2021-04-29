@@ -9,6 +9,7 @@
 #include "Logger.h"
 #include "Maze.h"
 #include "PacMan.h"
+#include "Ghost.h"
 #include "Character.h"
 
 class GamePlay : public State {
@@ -16,19 +17,30 @@ private:
     Logger* logger;
     Maze* maze;
     PacMan* pacMan;
-    Character* redGhost;
-    Character* pinkGhost;
-    Character* blueGhost;
-    Character* orangeGhost;
+    Ghost* redGhost;
+    Ghost* pinkGhost;
+    Ghost* blueGhost;
+    Ghost* orangeGhost;
 
     bool isPacManMovementAllowed();
 
+    void handleGhostMovement(Ghost* ghost);
+
+    bool isGhostMovementAllowed(Ghost* ghost);
+
+    float calculateGhostDistance(Ghost* ghost, int x, int y);
+
 public:
     void init();
+
     void loop();
+
     void render(sf::RenderWindow* window);
+
     void keyPressed(int code);
+
     void keyReleased(int code);
+
 };
 
 

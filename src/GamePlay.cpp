@@ -3,10 +3,14 @@
  */
 
 #include "PacMan.h"
+#include "Ghost.h"
 #include "GamePlay.h"
+#include "Direction.h"
 #include "LoadSprites.h"
 #include "Maze.h"
 #include "SFML/Graphics.hpp"
+
+#include <cmath>
 
 using namespace sf;
 
@@ -17,10 +21,10 @@ void GamePlay::init() {
     logger = new Logger("GamePlay");
     maze = new Maze();
     pacMan = new PacMan();
-    redGhost = new Character(13,14);
-    pinkGhost = new Character(13,17);
-    blueGhost = new Character(11,17);
-    orangeGhost = new Character(15,17);
+    redGhost = new Ghost(13,14,3,4);
+    pinkGhost = new Ghost(13,17,23,4);
+    blueGhost = new Ghost(11,17,26,32);
+    orangeGhost = new Ghost(15,17,1,32);
     logger->log("Playing State Initialised");
 }
 
@@ -29,14 +33,24 @@ void GamePlay::init() {
  */
 void GamePlay::loop() {
     if(isPacManMovementAllowed())
-        pacMan->move();
+        pacMan->movePacman();
     else
-        pacMan->stopMoving();
+        pacMan->stopPacman();
 
     if (maze->isMazeIntersection(pacMan->getCellX(), pacMan->getCellY()))
-        pacMan->stopMoving();
+        pacMan->stopPacman();
 
     maze->removePellets(pacMan);
+
+    redGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
+    pinkGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
+    blueGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
+    orangeGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
+
+    handleGhostMovement(redGhost);
+    handleGhostMovement(pinkGhost);
+    handleGhostMovement(blueGhost);
+    handleGhostMovement(orangeGhost);
 }
 
 /**
@@ -128,6 +142,72 @@ bool GamePlay::isPacManMovementAllowed() {
         }
     }
     return true;
+}
+
+/**
+ * Calculates the distance between ghost position and the x,y coordinates supplied to it
+ * @param ghost - Ghost for which distance is being calculated
+ * @param x - target X
+ * @param y - target Y
+ * @return distance
+ */
+float GamePlay::calculateGhostDistance(Ghost *ghost, int x, int y) {
+    float distance = 1000000.0f;
+    if (maze->isMazeIntersection(ghost->getCellX(), ghost->getCellY())) {
+        if (!maze->isCellBlockingCharacter(ghost->getCellX() + x, ghost->getCellY() + y)) {
+            // ((x2-x1)^2 - (Y2-Y1)^2)^(1/2)
+            distance = (float) sqrt(pow((ghost->getDestinationX() - (ghost->getCellX() + x)), 2) + pow((ghost->getDestinationY() - (ghost->getCellY() + y)), 2));
+        }
+    }
+    return distance;
+}
+
+/**
+ *
+ * @param ghost
+ */
+void GamePlay::handleGhostMovement(Ghost *ghost) {
+    if(maze->isMazeIntersection(ghost->getCellX(), ghost->getCellY())) {
+        float distanceRight = calculateGhostDistance(ghost, 1, 0);
+        float distanceLeft = calculateGhostDistance(ghost, -1, 0);
+        float distanceUp = calculateGhostDistance(ghost, 0, -1);
+        float distanceDown = calculateGhostDistance(ghost, 0, 1);
+
+        if (distanceRight < distanceLeft && distanceRight < distanceUp && distanceRight < distanceDown)
+            ghost->setDirection(Direction::RIGHT);
+        else if (distanceLeft < distanceRight && distanceLeft < distanceUp && distanceLeft < distanceDown)
+            ghost->setDirection(Direction::LEFT);
+        else if (distanceUp < distanceLeft && distanceUp < distanceRight && distanceUp < distanceDown)
+            ghost->setDirection(Direction::UP);
+        else if (distanceDown < distanceLeft && distanceDown < distanceUp && distanceDown < distanceRight)
+            ghost->setDirection(Direction::DOWN);
+    }
+    if (isGhostMovementAllowed(ghost))
+        ghost->moveGhost();
+}
+
+/**
+ *
+ * @param ghost
+ * @return
+ */
+bool GamePlay::isGhostMovementAllowed(Ghost *ghost) {
+    switch (ghost->getDirection()) {
+        case Direction::UP:
+            return !maze->isCellBlockingCharacter(ghost->getCellX(), ghost->getCellY() - 1);
+            break;
+        case Direction::DOWN:
+            return !maze->isCellBlockingCharacter(ghost->getCellX(), ghost->getCellY() + 1);
+            break;
+        case Direction::LEFT:
+            return !maze->isCellBlockingCharacter(ghost->getCellX() - 1, ghost->getCellY());
+            break;
+        case Direction::RIGHT:
+            return !maze->isCellBlockingCharacter(ghost->getCellX() + 1, ghost->getCellY());
+            break;
+        default:
+            return false;
+    }
 }
 
 
