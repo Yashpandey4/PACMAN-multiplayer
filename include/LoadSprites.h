@@ -7,14 +7,35 @@
 
 #include "SFML/Graphics.hpp"
 #include "Logger.h"
+#include "Animation.h"
 
 class LoadSprites {
 private:
     static sf::Texture spriteFile;
-    // static std::map<int, Animation> animations;
+    static std::map<int, Animation> animations;
     static sf::Texture maze;
     static Logger logger;
-    static void loadSpriteFromFile(int key, int rectLeft, int rectTop);
+    static void loadSpriteFromFile(int key, int rectLeft, int rectTop, int animationFrames);
+
+    static const int PAC_MAN_DOWN;
+    static const int PAC_MAN_LEFT;
+    static const int PAC_MAN_RIGHT;
+
+    static const int RED_GHOST_DOWN;
+    static const int RED_GHOST_LEFT;
+    static const int RED_GHOST_RIGHT;
+
+    static const int PINK_GHOST_DOWN;
+    static const int PINK_GHOST_LEFT;
+    static const int PINK_GHOST_RIGHT;
+
+    static const int BLUE_GHOST_DOWN;
+    static const int BLUE_GHOST_LEFT;
+    static const int BLUE_GHOST_RIGHT;
+
+    static const int ORANGE_GHOST_DOWN;
+    static const int ORANGE_GHOST_LEFT;
+    static const int ORANGE_GHOST_RIGHT;
 
 public:
     static void load();
@@ -22,10 +43,14 @@ public:
     static std::map<int, sf::Sprite*> spritesMap;
 
     static const int PAC_MAN;
+
     static const int BLUE_GHOST;
     static const int ORANGE_GHOST;
     static const int PINK_GHOST;
     static const int RED_GHOST;
+
+    static const int FRIGHTENED_GHOST;
+    static const int DEAD_PAC_MAN;
 };
 
 
