@@ -41,6 +41,7 @@ public:
 
     void keyReleased(int code);
 
+    void setChaseBehaviour();
 };
 
 

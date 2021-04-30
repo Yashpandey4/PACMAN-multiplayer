@@ -14,6 +14,11 @@
 Ghost::Ghost(int cellPositionX, int cellPositionY, int destinationX, int destinationY)
     : Character(cellPositionX, cellPositionY){
     setGhostDestination(destinationX, destinationY);
+    setDirection(Direction::UNSET);
+    scatterGhosts = true;
+    ghostOutOfCage = false;
+    ghostDecision = true;
+    ghostFrightened = false;
 }
 
 /**

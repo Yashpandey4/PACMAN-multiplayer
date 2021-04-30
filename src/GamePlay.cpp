@@ -25,6 +25,9 @@ void GamePlay::init() {
     pinkGhost = new Ghost(13,17,23,4);
     blueGhost = new Ghost(11,17,26,32);
     orangeGhost = new Ghost(15,17,1,32);
+
+    redGhost->ghostTeleport(13, 14);
+
     logger->log("Playing State Initialised");
 }
 
@@ -40,17 +43,73 @@ void GamePlay::loop() {
     if (maze->isMazeIntersection(pacMan->getCellX(), pacMan->getCellY()))
         pacMan->stopPacman();
 
-    maze->removePellets(pacMan);
+    maze->removePellets(pacMan, redGhost, pinkGhost, blueGhost, orangeGhost);
 
-    redGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
-    pinkGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
-    blueGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
-    orangeGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
+    setChaseBehaviour();
 
     handleGhostMovement(redGhost);
     handleGhostMovement(pinkGhost);
     handleGhostMovement(blueGhost);
     handleGhostMovement(orangeGhost);
+
+    if(pacMan->getPelletsEaten() == 5)
+        pinkGhost->ghostTeleport(13,14);
+    if(pacMan->getPelletsEaten() == 50)
+        blueGhost->ghostTeleport(13,14);
+    if(pacMan->getPelletsEaten() == 100)
+        orangeGhost->ghostTeleport(13,14);
+}
+
+/**
+ * In “Chase” mode, the ghosts are trying to find and capture Pac-Man.
+ * Each of the four ghosts has a unique behaviour while chasing Pac-Man.
+ * This function defines this behaviour
+ */
+void GamePlay::setChaseBehaviour() {
+    if (!pacMan->getDirections().empty()) {
+        // Red Ghost Directly Chases Pacman
+        // Blinky the red ghost is very aggressive in its approach while chasing Pac-Man and will follow Pac-Man once located.
+        if (!redGhost->isScatterGhosts()) {
+            redGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
+        }
+
+        // Pink Ghost is off from PacMan's location by 4 cells (lurks around PacMan)
+        // Pinky the pink ghost will attempt to ambush Pac-Man by trying to get in front of him and cut him off.
+        if (!pinkGhost->isScatterGhosts()) {
+            switch (pacMan->getDirections().front()) {
+                case Direction::UP:
+                    pinkGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY() - 4);
+                    break;
+                case Direction::DOWN:
+                    pinkGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY() + 4);
+                    break;
+                case Direction::LEFT:
+                    pinkGhost->setGhostDestination(pacMan->getCellX() - 4, pacMan->getCellY());
+                    break;
+                case Direction::RIGHT:
+                    pinkGhost->setGhostDestination(pacMan->getCellX() + 4, pacMan->getCellY());
+                    break;
+            }
+        }
+
+        // Blue Ghost Patrols with direction close to Pacman decided by distance between the two
+        // Inky the cyan ghost will patrol an area and is not very predictable in this mode.
+        if (!blueGhost->isScatterGhosts()) {
+            blueGhost->setGhostDestination(pacMan->getCellX() + (redGhost->getCellX() - pacMan->getCellX()), pacMan->getCellY() + (
+                    redGhost->getCellY() - pacMan->getCellY()));
+        }
+
+        // Orange Ghost chases Pacman if it is close to clyde else it minds its own business.
+        // Clyde the orange ghost is moving in a random fashion and seems to stay out of the way of Pac-Man.
+        if (!orangeGhost->isScatterGhosts()) {
+            if (sqrt(pow((orangeGhost->getCellX() - (pacMan->getCellX())), 2) + pow((orangeGhost->getCellY() - (pacMan->getCellY())), 2)) < 9) {
+                orangeGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
+            }
+            else {
+                orangeGhost->setGhostDestination(1, 32);
+            }
+        }
+    }
 }
 
 /**
@@ -153,43 +212,57 @@ bool GamePlay::isPacManMovementAllowed() {
  */
 float GamePlay::calculateGhostDistance(Ghost *ghost, int x, int y) {
     float distance = 1000000.0f;
-    if (maze->isMazeIntersection(ghost->getCellX(), ghost->getCellY())) {
-        if (!maze->isCellBlockingCharacter(ghost->getCellX() + x, ghost->getCellY() + y)) {
-            // ((x2-x1)^2 - (Y2-Y1)^2)^(1/2)
-            distance = (float) sqrt(pow((ghost->getDestinationX() - (ghost->getCellX() + x)), 2) + pow((ghost->getDestinationY() - (ghost->getCellY() + y)), 2));
-        }
+    if (!maze->isCellBlockingCharacter(ghost->getCellX() + x, ghost->getCellY() + y)) {
+        // ((x2-x1)^2 - (Y2-Y1)^2)^(1/2)
+        distance = (float) sqrt(pow((ghost->getDestinationX() - (ghost->getCellX() + x)), 2) + pow((ghost->getDestinationY() - (ghost->getCellY() + y)), 2));
     }
     return distance;
 }
 
 /**
- *
+ * This function determines the movement behaviour of the ghosts
  * @param ghost
  */
 void GamePlay::handleGhostMovement(Ghost *ghost) {
-    if(maze->isMazeIntersection(ghost->getCellX(), ghost->getCellY())) {
-        float distanceRight = calculateGhostDistance(ghost, 1, 0);
-        float distanceLeft = calculateGhostDistance(ghost, -1, 0);
-        float distanceUp = calculateGhostDistance(ghost, 0, -1);
-        float distanceDown = calculateGhostDistance(ghost, 0, 1);
-
-        if (distanceRight < distanceLeft && distanceRight < distanceUp && distanceRight < distanceDown)
-            ghost->setDirection(Direction::RIGHT);
-        else if (distanceLeft < distanceRight && distanceLeft < distanceUp && distanceLeft < distanceDown)
-            ghost->setDirection(Direction::LEFT);
-        else if (distanceUp < distanceLeft && distanceUp < distanceRight && distanceUp < distanceDown)
-            ghost->setDirection(Direction::UP);
-        else if (distanceDown < distanceLeft && distanceDown < distanceUp && distanceDown < distanceRight)
-            ghost->setDirection(Direction::DOWN);
+    // Set Scattering to false if target tile reached
+    if(ghost->isScatterGhosts()) {
+        if(ghost->getCellX() == ghost->getDestinationX() && ghost->getCellY() == ghost->getDestinationY()) {
+            ghost->setScatterGhosts(false);
+        }
     }
-    if (isGhostMovementAllowed(ghost))
+
+    if(maze->isMazeIntersection(ghost->getCellX(), ghost->getCellY())) {
+        if (ghost->isGhostDecision()) {
+            float distanceRight = calculateGhostDistance(ghost, 1, 0);
+            float distanceLeft = calculateGhostDistance(ghost, -1, 0);
+            float distanceUp = calculateGhostDistance(ghost, 0, -1);
+            float distanceDown = calculateGhostDistance(ghost, 0, 1);
+
+            if (distanceRight < distanceLeft && distanceRight < distanceUp && distanceRight < distanceDown)
+                ghost->setDirection(Direction::RIGHT);
+            else if (distanceLeft < distanceRight && distanceLeft < distanceUp && distanceLeft < distanceDown)
+                ghost->setDirection(Direction::LEFT);
+            else if (distanceUp < distanceLeft && distanceUp < distanceRight && distanceUp < distanceDown)
+                ghost->setDirection(Direction::UP);
+            else if (distanceDown < distanceLeft && distanceDown < distanceUp && distanceDown < distanceRight)
+                ghost->setDirection(Direction::DOWN);
+        }
+        ghost->setGhostDecision(false);
+    }
+    else {
+        ghost->setGhostDecision(true);
+    }
+
+    if (isGhostMovementAllowed(ghost) && ghost->isGhostOutOfCage())
         ghost->moveGhost();
+    else
+        ghost->setGhostDecision(true);
 }
 
 /**
- *
- * @param ghost
- * @return
+ * This function determines if ghost movement is allowed from a target to destination cell
+ * @param ghost - Ghost in question (who we want to move)
+ * @return Boolean, True if Movement is allowed
  */
 bool GamePlay::isGhostMovementAllowed(Ghost *ghost) {
     switch (ghost->getDirection()) {

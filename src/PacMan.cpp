@@ -27,7 +27,7 @@ void PacMan::queueDirection(Direction direction) {
  * Constructor to initialise the PacMan game object
  */
 PacMan::PacMan() : Character(13, 26) {
-
+    eatenPelletsCount = 0;
 }
 
 /**
@@ -83,6 +83,37 @@ void PacMan::stopPacman() {
             }
         }
     }
+}
+
+/**
+ * Increase eaten pellets count by the player
+ */
+void PacMan::eatPellets() {
+    eatenPelletsCount++;
+}
+
+/**
+ * Returns the number of pellets eaten by PacMan
+ * @return number of pellets eaten by PacMan
+ */
+int PacMan::getPelletsEaten() const {
+    return eatenPelletsCount;
+}
+
+/**
+ * Getter for pacmanDead
+ * @return True if Pacman is dead
+ */
+bool PacMan::isPacmanDead() const {
+    return pacmanDead;
+}
+
+/**
+ * Setter for pacmanDead
+ * @param pacmanDead
+ */
+void PacMan::setPacmanDead(bool pacmanDead) {
+    PacMan::pacmanDead = pacmanDead;
 }
 
 

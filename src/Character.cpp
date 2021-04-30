@@ -73,7 +73,7 @@ void Character::move(float x, float y) {
 void Character::teleport(int x, int y) {
     cellX = x;
     cellY = y;
-    screenPositionX = (x * 2.0f + 1.0f) * 8.0f;
-    screenPositionY = (y * 2.0f + 1.0f) * 8.0f;
+    screenPositionX = x * 16.0f + 8.0f;
+    screenPositionY = y * 16.0f + 8.0f;
 }
 
