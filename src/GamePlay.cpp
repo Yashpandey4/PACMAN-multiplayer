@@ -30,13 +30,15 @@ void GamePlay::init() {
     redGhost->teleport(13, 14);
 
     logger->log("Playing State Initialised");
+
+    waitTime = 0;
 }
 
 /**
  * Specifies actions which keep the play state of the game running in a loop
  */
 void GamePlay::loop() {
-    if(isPacManMovementAllowed())
+    if(isPacManMovementAllowed() && !pacMan->isPacmanDead())
         pacMan->movePacman();
     else
         pacMan->stopPacman();
@@ -59,6 +61,50 @@ void GamePlay::loop() {
         blueGhost->teleport(13, 14);
     if(pacMan->getPelletsEaten() == 100)
         orangeGhost->teleport(13, 14);
+
+    teleportTunnels(pacMan);
+    teleportTunnels(redGhost);
+    teleportTunnels(pinkGhost);
+    teleportTunnels(blueGhost);
+    teleportTunnels(orangeGhost);
+
+    handleGhostFrightening(redGhost);
+    handleGhostFrightening(pinkGhost);
+    handleGhostFrightening(blueGhost);
+    handleGhostFrightening(orangeGhost);
+
+    if (pacMan->getPelletsEaten() == 240) {
+        redGhost->teleport(-2,-2);
+        pinkGhost->teleport(-2,-2);
+        blueGhost->teleport(-2,-2);
+        orangeGhost->teleport(-2,-2);
+        waitTime++;
+    }
+
+    if (pacMan->isPacmanDead())
+        waitTime++;
+
+    if (waitTime == 200) {
+        if (pacMan->isPacmanDead()) {
+            if (redGhost->isGhostOutOfCage())
+                redGhost->teleport(13, 14);
+            if (pinkGhost->isGhostOutOfCage())
+                pinkGhost->teleport(13,14);
+            if (blueGhost->isGhostOutOfCage())
+                blueGhost->teleport(13,14);
+            if (orangeGhost->isGhostOutOfCage())
+                orangeGhost->teleport(13,14);
+            pacMan->teleport(13,26);
+            pacMan->setPacmanDead(false);
+            waitTime = 0;
+            logger->log("PacMan Dead. Resetting Game.");
+        }
+        else {
+            GamePlay::init();
+            waitTime = 0;
+        }
+    }
+
 }
 
 /**
@@ -149,17 +195,17 @@ void GamePlay::render(RenderWindow *window) {
         redGhostSprite = *LoadSprites::get(Entity::FRIGHTENED_GHOST, redGhost->isGhostOutOfCage(), redGhost->getDirection());
 
     if (!pinkGhost->isGhostFrightened())
-        pinkGhostSprite = *LoadSprites::get(Entity::RED_GHOST, pinkGhost->isGhostOutOfCage(), pinkGhost->getDirection());
+        pinkGhostSprite = *LoadSprites::get(Entity::PINK_GHOST, pinkGhost->isGhostOutOfCage(), pinkGhost->getDirection());
     else
         pinkGhostSprite = *LoadSprites::get(Entity::FRIGHTENED_GHOST, pinkGhost->isGhostOutOfCage(), pinkGhost->getDirection());
 
     if (!blueGhost->isGhostFrightened())
-        blueGhostSprite = *LoadSprites::get(Entity::RED_GHOST, blueGhost->isGhostOutOfCage(), blueGhost->getDirection());
+        blueGhostSprite = *LoadSprites::get(Entity::BLUE_GHOST, blueGhost->isGhostOutOfCage(), blueGhost->getDirection());
     else
         blueGhostSprite = *LoadSprites::get(Entity::FRIGHTENED_GHOST, blueGhost->isGhostOutOfCage(), blueGhost->getDirection());
 
     if (!orangeGhost->isGhostFrightened())
-        orangeGhostSprite = *LoadSprites::get(Entity::RED_GHOST, orangeGhost->isGhostOutOfCage(), orangeGhost->getDirection());
+        orangeGhostSprite = *LoadSprites::get(Entity::ORANGE_GHOST, orangeGhost->isGhostOutOfCage(), orangeGhost->getDirection());
     else
         orangeGhostSprite = *LoadSprites::get(Entity::FRIGHTENED_GHOST, orangeGhost->isGhostOutOfCage(), orangeGhost->getDirection());
 
@@ -309,7 +355,7 @@ bool GamePlay::isGhostMovementAllowed(Ghost *ghost) {
 }
 
 /**
- *
+ * This function helps the characters teleport from one end of the tunnel to the other
  * @param character
  */
 void GamePlay::teleportTunnels(Character *character) {
@@ -320,11 +366,12 @@ void GamePlay::teleportTunnels(Character *character) {
 }
 
 /**
+ * @TODO: Automate tunnel locations in a random maze instead of hardcoding
  * Handles the frightened state of ghosts, when pacman eats power pellets
  * @param ghost - The frightened ghost in question
  */
 void GamePlay::handleGhostFrightening(Ghost *ghost) {
-     if (pacMan->getCellX() == ghost->getCellX() && pacMan->getCellX() == ghost->getCellY()) {
+     if (pacMan->getCellX() == ghost->getCellX() && pacMan->getCellY() == ghost->getCellY()) {
          if (ghost->isGhostFrightened()) {
              ghost->teleport(13, 14);
              ghost->setGhostFrightened(false);

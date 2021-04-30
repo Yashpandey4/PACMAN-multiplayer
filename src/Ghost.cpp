@@ -105,7 +105,7 @@ void Ghost::setGhostDecision(bool ghostDecision) {
  */
 void Ghost::setGhostFrightened(bool ghostFrightened) {
     if(ghostFrightened)
-        Ghost::ghostFrightened = 2000;
+        Ghost::ghostFrightened = 8000;
     else
         Ghost::ghostFrightened = 0;
 }
