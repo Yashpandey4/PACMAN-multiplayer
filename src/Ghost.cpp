@@ -5,11 +5,11 @@
 #include "Ghost.h"
 
 /**
- *
- * @param cellPositionX
- * @param cellPositionY
- * @param destinationX
- * @param destinationY
+ * Constructor or initialiser for Ghosts
+ * @param cellPositionX - Initial Ghost Position
+ * @param cellPositionY - Initial Ghost Position
+ * @param destinationX - Desired Ghost Position
+ * @param destinationY - Desired Ghost Position
  */
 Ghost::Ghost(int cellPositionX, int cellPositionY, int destinationX, int destinationY)
     : Character(cellPositionX, cellPositionY){
@@ -17,9 +17,9 @@ Ghost::Ghost(int cellPositionX, int cellPositionY, int destinationX, int destina
 }
 
 /**
- *
- * @param x
- * @param y
+ * Sets target destination of ghosts to be (x,y) target coordinates
+ * @param x - coordinate
+ * @param y - coordinate
  */
 void Ghost::setGhostDestination(int x, int y) {
     destinationX = x;
@@ -27,7 +27,7 @@ void Ghost::setGhostDestination(int x, int y) {
 }
 
 /**
- *
+ * Handles Ghost Movements
  */
 void Ghost::moveGhost() {
     switch(direction) {
@@ -47,33 +47,105 @@ void Ghost::moveGhost() {
 }
 
 /**
- *
- * @return
+ * Getter for Destination X coordinate
+ * @return DestinationX
  */
 int Ghost::getDestinationX() const {
     return destinationX;
 }
 
 /**
- *
- * @return
+ * Getter for Destination Y coordinate
+ * @return DestinationY
  */
 int Ghost::getDestinationY() const {
     return destinationY;
 }
 
 /**
- *
- * @return
+ * Getter for Direction
+ * @return Direction
  */
 Direction Ghost::getDirection() const {
     return direction;
 }
 
 /**
- *
+ * Setter for Direction
  * @param direction
  */
 void Ghost::setDirection(Direction direction) {
     Ghost::direction = direction;
 }
+
+/**
+ * Setter for scatterGhosts
+ * @param scatterGhosts
+ */
+void Ghost::setScatterGhosts(bool scatterGhosts) {
+    Ghost::scatterGhosts = scatterGhosts;
+}
+
+/**
+ * Setter for ghostDecision
+ * @param ghostDecision
+ */
+void Ghost::setGhostDecision(bool ghostDecision) {
+    Ghost::ghostDecision = ghostDecision;
+}
+
+/**
+ * Setter for ghostFrightened
+ * @param ghostFrightened
+ */
+void Ghost::setGhostFrightened(bool ghostFrightened) {
+    if(ghostFrightened)
+        Ghost::ghostFrightened = 2000;
+    else
+        Ghost::ghostFrightened = 0;
+}
+
+/**
+ * Getter for scatterGhosts
+ * @return scatterGhosts
+ */
+bool Ghost::isScatterGhosts() const {
+    return scatterGhosts;
+}
+
+/**
+ * Getter for ghostOutOfCage
+ * @return ghostOutOfCage
+ */
+bool Ghost::isGhostOutOfCage() const {
+    return ghostOutOfCage;
+}
+
+/**
+ * Getter for ghostDecision
+ * @return ghostDecision
+ */
+bool Ghost::isGhostDecision() const {
+    return ghostDecision;
+}
+
+/**
+ * Getter for ghostFrightened
+ * @return ghostFrightened
+ */
+int Ghost::getGhostFrightened() {
+    if (ghostFrightened > 0 )
+        ghostFrightened--;
+    return ghostFrightened > 0;
+}
+
+/**
+ * Transports the ghost to the given (x,y) target coordinates
+ * @param x - coordinate
+ * @param y - coordinate
+ */
+void Ghost::ghostTeleport(int x, int y) {
+    Character::teleport(x, y);
+    ghostOutOfCage = true;
+}
+

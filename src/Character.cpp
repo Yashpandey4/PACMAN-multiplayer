@@ -65,3 +65,15 @@ void Character::move(float x, float y) {
     }
 }
 
+/**
+ * Transports the character to the given (x,y) target coordinates
+ * @param x - coordinate
+ * @param y - coordinate
+ */
+void Character::teleport(int x, int y) {
+    cellX = x;
+    cellY = y;
+    screenPositionX = (x * 2.0f + 1.0f) * 8.0f;
+    screenPositionY = (y * 2.0f + 1.0f) * 8.0f;
+}
+

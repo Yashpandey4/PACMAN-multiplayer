@@ -12,10 +12,12 @@
 class Ghost : public Character {
 private:
     int destinationX;
-
     int destinationY;
-
     Direction direction;
+    bool scatterGhosts;
+    bool ghostOutOfCage;
+    bool ghostDecision;
+    int ghostFrightened;
 
 public:
     void setDirection(Direction direction);
@@ -33,6 +35,22 @@ public:
     int getDestinationY() const;
 
     Direction getDirection() const;
+
+    void setScatterGhosts(bool scatterGhosts);
+
+    bool isScatterGhosts() const;
+
+    bool isGhostOutOfCage() const;
+
+    void setGhostDecision(bool ghostDecision);
+
+    bool isGhostDecision() const;
+
+    void setGhostFrightened(bool ghostFrightened);
+
+    int getGhostFrightened();
+
+    void ghostTeleport(int x, int y);
 
 };
 
