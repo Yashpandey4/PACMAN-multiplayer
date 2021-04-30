@@ -19,7 +19,7 @@ public:
 
     void changeFrame();
 
-    sf::IntRect *getBoundaries() const;
+    sf::IntRect getBoundaries() const;
 };
 
 

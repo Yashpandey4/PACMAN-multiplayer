@@ -8,8 +8,8 @@
  *
  * @return
  */
-sf::IntRect *Animation::getBoundaries() const {
-    return boundaries;
+sf::IntRect Animation::getBoundaries() const {
+    return *boundaries;
 }
 
 /**
