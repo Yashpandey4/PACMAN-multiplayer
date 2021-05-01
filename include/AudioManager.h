@@ -12,11 +12,11 @@ class AudioManager {
 public:
     AudioManager();
 
-    void PlaySound(Sounds soundType, bool loop, int volume);
+    void playSound(Sounds soundType, bool loop, int volume);
 
-    void StopSound(Sounds soundType = Sounds::None);
+    void stopSound(Sounds soundType = Sounds::None);
 
-    bool IsPlayingAudio(Sounds soundType);
+    bool isPlayingAudio(Sounds soundType);
 
 private:
 

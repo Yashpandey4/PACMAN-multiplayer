@@ -36,7 +36,7 @@ AudioManager::AudioManager() {
  * @param loop - play once or loop?
  * @param volume - sound volume (float)
  */
-void AudioManager::PlaySound(Sounds soundType, bool loop, int volume) {
+void AudioManager::playSound(Sounds soundType, bool loop, int volume) {
     switch (soundType)
     {
         case Sounds::PowerSnack:
@@ -81,7 +81,7 @@ void AudioManager::PlaySound(Sounds soundType, bool loop, int volume) {
  * Stops the sounds
  * @param soundType - which sound to stop
  */
-void AudioManager::StopSound(Sounds soundType) {
+void AudioManager::stopSound(Sounds soundType) {
     switch (soundType)
     {
         case Sounds::PowerSnack:
@@ -122,7 +122,7 @@ void AudioManager::StopSound(Sounds soundType) {
  * @param soundType - Sound to be checked
  * @return True if sound is playing
  */
-bool AudioManager::IsPlayingAudio(Sounds soundType) {
+bool AudioManager::isPlayingAudio(Sounds soundType) {
     switch (soundType)
     {
         case Sounds::PowerSnack:

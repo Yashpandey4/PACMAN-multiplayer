@@ -8,6 +8,9 @@
 #include "Direction.h"
 #include "LoadSprites.h"
 #include "Maze.h"
+#include "Audio.h"
+
+#include "SFML/Audio.hpp"
 #include "SFML/Graphics.hpp"
 
 #include <cmath>
@@ -29,7 +32,8 @@ void GamePlay::init() {
 
     redGhost->teleport(13, 14);
 
-    logger->log("Playing State Initialised");
+    audioManager = new AudioManager();
+    stopSirenAndLoop(Sounds::GameStart, false, VOLUME);
 
     waitTime = 0;
 }
@@ -38,6 +42,11 @@ void GamePlay::init() {
  * Specifies actions which keep the play state of the game running in a loop
  */
 void GamePlay::loop() {
+    // a hacky way to freeze game when intro music is playing - give player some time to prepare.
+    while(audioManager->isPlayingAudio(Sounds::GameStart) || audioManager->isPlayingAudio(Sounds::Death)) {
+        continue;
+    }
+
     if(isPacManMovementAllowed() && !pacMan->isPacmanDead())
         pacMan->movePacman();
     else
@@ -46,7 +55,7 @@ void GamePlay::loop() {
     if (maze->isMazeIntersection(pacMan->getCellX(), pacMan->getCellY()))
         pacMan->stopPacman();
 
-    maze->removePellets(pacMan, redGhost, pinkGhost, blueGhost, orangeGhost);
+    removePellets();
 
     setChaseBehaviour();
 
@@ -98,6 +107,7 @@ void GamePlay::loop() {
             pacMan->setPacmanDead(false);
             waitTime = 0;
             logger->log("PacMan Dead. Resetting Game.");
+            stopSirenAndLoop(Sounds::Death, false, VOLUME);
         }
         else {
             GamePlay::init();
@@ -355,6 +365,7 @@ bool GamePlay::isGhostMovementAllowed(Ghost *ghost) {
 }
 
 /**
+ * @TODO: Automate tunnel locations in a random maze instead of hardcoding
  * This function helps the characters teleport from one end of the tunnel to the other
  * @param character
  */
@@ -366,7 +377,6 @@ void GamePlay::teleportTunnels(Character *character) {
 }
 
 /**
- * @TODO: Automate tunnel locations in a random maze instead of hardcoding
  * Handles the frightened state of ghosts, when pacman eats power pellets
  * @param ghost - The frightened ghost in question
  */
@@ -387,3 +397,46 @@ void GamePlay::handleGhostFrightening(Ghost *ghost) {
 }
 
 
+/**
+ * Removes the pellets from the game screen when PacMan eats them
+ */
+void GamePlay::removePellets() {
+    // Pellet Tile -> Blank Tile
+    if(maze->cells[pacMan->getCellX()][pacMan->getCellY()] == 26) {
+        maze->cells[pacMan->getCellX()][pacMan->getCellY()] = 30;
+        pacMan->eatPellets();
+        if(!audioManager->isPlayingAudio(Sounds::Munch))
+            audioManager->playSound(Sounds::Munch, false, VOLUME_MUNCH);
+    }
+    // Power Pellet Tile -> Blank Tile
+    else if(maze->cells[pacMan->getCellX()][pacMan->getCellY()] == 27) {
+        maze->cells[pacMan->getCellX()][pacMan->getCellY()] = 30;
+        redGhost->setGhostFrightened(true);
+        pinkGhost->setGhostFrightened(true);
+        blueGhost->setGhostFrightened(true);
+        orangeGhost->setGhostFrightened(true);
+
+        if(audioManager->isPlayingAudio(Sounds::Siren))
+            audioManager->stopSound(Sounds::Siren);
+        if(audioManager->isPlayingAudio(Sounds::Munch))
+            audioManager->stopSound(Sounds::Munch);
+        audioManager->playSound(Sounds::PowerSnack, false, VOLUME);
+    }
+}
+
+/**
+ * replace siren audio with another sound
+ * @param sound - to be played
+ * @param isLoop - whether to play on a loop or no
+ * @param volume - volume to be played in
+ */
+void GamePlay::stopSirenAndLoop(Sounds sound, bool isLoop, int volume) {
+    if(audioManager->isPlayingAudio(Sounds::Siren))
+        audioManager->stopSound(Sounds::Siren);
+    if(audioManager->isPlayingAudio(Sounds::Munch))
+        audioManager->stopSound(Sounds::Munch);
+    audioManager->playSound(sound, isLoop, volume);
+    while(audioManager->isPlayingAudio(sound))
+        continue;
+    audioManager->playSound(Sounds::Siren, true, VOLUME_SIREN);
+}

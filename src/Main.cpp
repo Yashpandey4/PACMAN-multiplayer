@@ -14,8 +14,8 @@ int main()
 
     while(GameWindow::isRunning())
     {
-        GameWindow::handleEvents();
         GameWindow::render();
+        GameWindow::handleEvents();
     }
 
     // For windows Systems, uncomment the next line to avoid exiting during gameplay
