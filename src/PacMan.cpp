@@ -3,6 +3,7 @@
 //
 
 #include "PacMan.h"
+#include "Maze.h"
 
 /**
  * Keeps track of the directions turns for a PacMan object
@@ -26,7 +27,7 @@ void PacMan::queueDirection(Direction direction) {
 /**
  * Constructor to initialise the PacMan game object
  */
-PacMan::PacMan() : Character(13, 26) {
+PacMan::PacMan(int initialX, int initialY) : Character(initialX, initialY) {
     eatenPelletsCount = 0;
 }
 

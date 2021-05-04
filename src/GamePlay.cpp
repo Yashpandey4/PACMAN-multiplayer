@@ -9,14 +9,17 @@
 #include "LoadSprites.h"
 #include "Maze.h"
 #include "Audio.h"
-
+#include <iostream>
+#include <bits/stdc++.h>
 #include "SFML/Audio.hpp"
 #include "SFML/Graphics.hpp"
+#include<unistd.h>
 
 #include <cmath>
 #include <Entity.h>
 
 using namespace sf;
+using namespace std;
 
 /**
  * Initialises the play state of the game
@@ -24,13 +27,18 @@ using namespace sf;
 void GamePlay::init() {
     logger = new Logger("GamePlay");
     maze = new Maze();
-    pacMan = new PacMan();
-    redGhost = new Ghost(13,14,3,4);
-    pinkGhost = new Ghost(13,17,23,4);
-    blueGhost = new Ghost(11,17,26,32);
-    orangeGhost = new Ghost(15,17,1,32);
+    int i;
+    do{
+        i = rand()%25 + 1;
+    }
+    while(!maze->isCellBlockingCharacter(i, 29));
+    pacMan = new PacMan(i, 30);
+    redGhost = new Ghost(14,14,1, 3);
+    pinkGhost = new Ghost(14,18,26,3);
+    blueGhost = new Ghost(12,18,1,30);
+    orangeGhost = new Ghost(16,18,26,30);
 
-    redGhost->teleport(13, 14);
+    redGhost->teleport(12, 15);
 
     audioManager = new AudioManager();
     stopSirenAndLoop(Sounds::GameStart, false, VOLUME);
@@ -56,32 +64,31 @@ void GamePlay::loop() {
         pacMan->stopPacman();
 
     removePellets();
-
+    redGhost->setScatterGhosts(false);
+    pinkGhost->setScatterGhosts(false);
+    blueGhost->setScatterGhosts(false);
+    orangeGhost->setScatterGhosts(false);
     setChaseBehaviour();
 
     handleGhostMovement(redGhost);
     handleGhostMovement(pinkGhost);
     handleGhostMovement(blueGhost);
     handleGhostMovement(orangeGhost);
-
     if(pacMan->getPelletsEaten() == 5)
         pinkGhost->teleport(13, 14);
     if(pacMan->getPelletsEaten() == 50)
         blueGhost->teleport(13, 14);
     if(pacMan->getPelletsEaten() == 100)
         orangeGhost->teleport(13, 14);
-
     teleportTunnels(pacMan);
     teleportTunnels(redGhost);
     teleportTunnels(pinkGhost);
     teleportTunnels(blueGhost);
     teleportTunnels(orangeGhost);
-
     handleGhostFrightening(redGhost);
     handleGhostFrightening(pinkGhost);
     handleGhostFrightening(blueGhost);
     handleGhostFrightening(orangeGhost);
-
     if (pacMan->getPelletsEaten() == 240) {
         redGhost->teleport(-2,-2);
         pinkGhost->teleport(-2,-2);
@@ -163,7 +170,7 @@ void GamePlay::setChaseBehaviour() {
                 orangeGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
             }
             else {
-                orangeGhost->setGhostDestination(1, 32);
+                orangeGhost->setGhostDestination(1, 30);
             }
         }
     }
@@ -318,7 +325,6 @@ void GamePlay::handleGhostMovement(Ghost *ghost) {
             float distanceLeft = calculateGhostDistance(ghost, -1, 0);
             float distanceUp = calculateGhostDistance(ghost, 0, -1);
             float distanceDown = calculateGhostDistance(ghost, 0, 1);
-
             if (distanceRight < distanceLeft && distanceRight < distanceUp && distanceRight < distanceDown)
                 ghost->setDirection(Direction::RIGHT);
             else if (distanceLeft < distanceRight && distanceLeft < distanceUp && distanceLeft < distanceDown)
@@ -371,8 +377,8 @@ bool GamePlay::isGhostMovementAllowed(Ghost *ghost) {
  */
 void GamePlay::teleportTunnels(Character *character) {
     if (character->getCellX() == 0 && character->getCellY() == 17)
-        character->teleport(26, 17);
-    else if (character->getCellX() == 27 && character->getCellY() == 17)
+        character->teleport(27, 17);
+    else if (character->getCellX() == 28 && character->getCellY() == 17)
         character->teleport(1, 17);
 }
 
@@ -402,15 +408,15 @@ void GamePlay::handleGhostFrightening(Ghost *ghost) {
  */
 void GamePlay::removePellets() {
     // Pellet Tile -> Blank Tile
-    if(maze->cells[pacMan->getCellX()][pacMan->getCellY()] == 26) {
-        maze->cells[pacMan->getCellX()][pacMan->getCellY()] = 30;
+    if(maze->cells[pacMan->getCellX()][pacMan->getCellY()] == 0) {
+        maze->cells[pacMan->getCellX()][pacMan->getCellY()] = 4;
         pacMan->eatPellets();
         if(!audioManager->isPlayingAudio(Sounds::Munch))
             audioManager->playSound(Sounds::Munch, false, VOLUME_MUNCH);
     }
     // Power Pellet Tile -> Blank Tile
-    else if(maze->cells[pacMan->getCellX()][pacMan->getCellY()] == 27) {
-        maze->cells[pacMan->getCellX()][pacMan->getCellY()] = 30;
+    else if(maze->cells[pacMan->getCellX()][pacMan->getCellY()] == 3) {
+        maze->cells[pacMan->getCellX()][pacMan->getCellY()] = 4;
         redGhost->setGhostFrightened(true);
         pinkGhost->setGhostFrightened(true);
         blueGhost->setGhostFrightened(true);

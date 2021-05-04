@@ -16,7 +16,7 @@ private:
     bool pacmanDead;
 
 public:
-    PacMan();
+    PacMan(int initialX, int initialY);
 
     constexpr static const float PACMAN_SPEED = 0.04f;
 

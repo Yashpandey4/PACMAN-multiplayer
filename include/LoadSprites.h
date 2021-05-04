@@ -23,6 +23,7 @@ public:
     static void load();
 
     static sf::Sprite* mazePieces[];
+    static sf::Sprite* mazePieces_temp[];
 
     static sf::Sprite* get(int value, bool animated, Direction facing);
 };

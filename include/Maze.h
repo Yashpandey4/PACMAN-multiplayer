@@ -11,8 +11,8 @@
 class Maze
 {
 public:
-    static const int SIZE_X = 28;
-    static const int SIZE_Y = 36;
+    static const int SIZE_X = 30;
+    static const int SIZE_Y = 34;
 
     Maze();
 
