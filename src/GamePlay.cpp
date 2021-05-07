@@ -110,7 +110,12 @@ void GamePlay::loop() {
                 blueGhost->teleport(13,14);
             if (orangeGhost->isGhostOutOfCage())
                 orangeGhost->teleport(13,14);
-            pacMan->teleport(13,26);
+            int i;
+            do{
+                i = rand()%25 + 1;
+            }
+            while(!maze->isCellBlockingCharacter(i, 29));
+            pacMan->teleport(i, 30);
             pacMan->setPacmanDead(false);
             waitTime = 0;
             logger->log("PacMan Dead. Resetting Game.");
