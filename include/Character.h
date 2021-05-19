@@ -28,6 +28,8 @@ public:
     int getCellY() const;
 
     void move(float x, float y);
+
+    void teleport(int x, int y);
 };
 
 #endif //PACMAN_2PLAYER_CHARACTER_H

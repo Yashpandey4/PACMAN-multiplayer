@@ -12,14 +12,29 @@
 class PacMan : public Character {
 private:
     std::queue<Direction> directions;
+    int eatenPelletsCount;
+    bool pacmanDead;
 
 public:
     PacMan();
+
     constexpr static const float PACMAN_SPEED = 0.04f;
+
     const std::queue<Direction> &getDirections() const;
+
     void queueDirection(Direction direction);
-    void move();
-    void stopMoving();
+
+    void movePacman();
+
+    void stopPacman();
+
+    void eatPellets();
+
+    int getPelletsEaten() const;
+
+    bool isPacmanDead() const;
+
+    void setPacmanDead(bool pacmanDead);
 };
 
 
