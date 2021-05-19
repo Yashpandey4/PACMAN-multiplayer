@@ -5,18 +5,22 @@
 #ifndef PACMAN_2PLAYER_MAZE_H
 #define PACMAN_2PLAYER_MAZE_H
 
+#include "PacMan.h"
 
 class Maze
 {
 public:
-    static const int SizeX = 28;
-    static const int SizeY = 36;
+    static const int SIZE_X = 28;
+    static const int SIZE_Y = 36;
 
     Maze();
-    int getTileCode(int x, int y);
+    int getCellCode(int x, int y);
+    bool isCellBlockingCharacter(int x, int y);
+    static bool isMazeIntersection(int x, int y);
+    void removePellets(PacMan* pacMan);
 
 private:
-    int tiles[SizeX][SizeY];
+    int cells[SIZE_X][SIZE_Y];
 };
 
 

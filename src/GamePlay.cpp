@@ -2,6 +2,7 @@
  * First State in the game, demonstrates start of the game play
  */
 
+#include "PacMan.h"
 #include "GamePlay.h"
 #include "LoadSprites.h"
 #include "Maze.h"
@@ -15,25 +16,40 @@ using namespace sf;
 void GamePlay::init() {
     logger = new Logger("GamePlay");
     maze = new Maze();
+    pacMan = new PacMan();
+    redGhost = new Character(13,14);
+    pinkGhost = new Character(13,17);
+    blueGhost = new Character(11,17);
+    orangeGhost = new Character(15,17);
     logger->log("Playing State Initialised");
 }
 
 /**
  * Specifies actions which keep the play state of the game running in a loop
  */
-void GamePlay::loop() {}
+void GamePlay::loop() {
+    if(isPacManMovementAllowed())
+        pacMan->move();
+    else
+        pacMan->stopMoving();
+
+    if (maze->isMazeIntersection(pacMan->getCellX(), pacMan->getCellY()))
+        pacMan->stopMoving();
+
+    maze->removePellets(pacMan);
+}
 
 /**
  * Render sprites and stuff on the game window
  * @param window - Game Window
  */
 void GamePlay::render(RenderWindow *window) {
-    for (int i = 0; i < Maze::SizeX; i++)
+    for (int i = 0; i < Maze::SIZE_X; i++)
     {
-        for (int j = 0; j < Maze::SizeY; j++)
+        for (int j = 0; j < Maze::SIZE_Y; j++)
         {
-            LoadSprites::mazePieces[maze->getTileCode(i, j)]->setPosition(i * 16.0f, j * 16.0f);
-            window->draw(*LoadSprites::mazePieces[maze->getTileCode(i, j)]);
+            LoadSprites::mazePieces[maze->getCellCode(i, j)]->setPosition(i * 16.0f, j * 16.0f);
+            window->draw(*LoadSprites::mazePieces[maze->getCellCode(i, j)]);
         }
     }
 
@@ -49,11 +65,11 @@ void GamePlay::render(RenderWindow *window) {
     blueGhostSprite = *LoadSprites::spritesMap.at(LoadSprites::BLUE_GHOST);
     orangeGhostSprite = *LoadSprites::spritesMap.at(LoadSprites::ORANGE_GHOST);
 
-    pacManSprite.setPosition(224,424);
-    redGhostSprite.setPosition(224, 323);
-    pinkGhostSprite.setPosition(224,280);
-    blueGhostSprite.setPosition(192,280);
-    orangeGhostSprite.setPosition(256,280);
+    pacManSprite.setPosition(pacMan->getScreenPositionX(),pacMan->getScreenPositionY());
+    redGhostSprite.setPosition(redGhost->getScreenPositionX(), redGhost->getScreenPositionY());
+    pinkGhostSprite.setPosition(pinkGhost->getScreenPositionX(),pinkGhost->getScreenPositionY());
+    blueGhostSprite.setPosition(blueGhost->getScreenPositionX(),blueGhost->getScreenPositionY());
+    orangeGhostSprite.setPosition(orangeGhost->getScreenPositionX(),orangeGhost->getScreenPositionY());
 
     window->draw(pacManSprite);
     window->draw(redGhostSprite);
@@ -67,7 +83,21 @@ void GamePlay::render(RenderWindow *window) {
  * @param code - key code
  */
 void GamePlay::keyPressed(int code) {
-    logger->log("Key Pressed: "+to_string(code));
+    // logger->log("Key Pressed: "+to_string(code));
+    switch (code) {
+        case Keyboard::Up:
+            pacMan->queueDirection(Direction::UP);
+            break;
+        case Keyboard::Down:
+            pacMan->queueDirection(Direction::DOWN);
+            break;
+        case Keyboard::Left:
+            pacMan->queueDirection(Direction::LEFT);
+            break;
+        case Keyboard::Right:
+            pacMan->queueDirection(Direction::RIGHT);
+            break;
+    }
 }
 
 /**
@@ -75,3 +105,29 @@ void GamePlay::keyPressed(int code) {
  * @param code - key code
  */
 void GamePlay::keyReleased(int code) {}
+
+/**
+ * Determines if the PacMan character is free to move
+ * @return True if pacman can move, false otherwise
+ */
+bool GamePlay::isPacManMovementAllowed() {
+    if (!pacMan->getDirections().empty()) {
+        switch (pacMan->getDirections().front()) {
+            case Direction::UP:
+                return !maze->isCellBlockingCharacter(pacMan->getCellX(), pacMan->getCellY() - 1);
+                break;
+            case Direction::DOWN:
+                return !maze->isCellBlockingCharacter(pacMan->getCellX(), pacMan->getCellY() + 1);
+                break;
+            case Direction::LEFT:
+                return !maze->isCellBlockingCharacter(pacMan->getCellX() - 1, pacMan->getCellY());
+                break;
+            case Direction::RIGHT:
+                return !maze->isCellBlockingCharacter(pacMan->getCellX() + 1, pacMan->getCellY());
+                break;
+        }
+    }
+    return true;
+}
+
+
