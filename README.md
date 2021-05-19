@@ -2,9 +2,10 @@
 Find exact project details [here](https://www.cse.iitd.ac.in/~rijurekha/cop290_2021.html) under task 2.
 
 ## Compilation and Execution
-1. From the project root, type `make` in the terminal
-2. To execute the project, type `./bin/pacman`
-3. Type `make clean` to remove the compiled objects and binaries
+1. From the project root, type `sh scripts/build.sh` in the terminal
+2. To host the game, type `sh scripts/run.sh server`
+3. To play the game, type `sh scripts/run.sh client`
+4. Type `make clean` to remove the compiled objects and binaries
 
 ## Project Structure
 - **assets:** All non-code files required for program execution go here. These are static files and needn't be compiled.
@@ -13,7 +14,8 @@ Find exact project details [here](https://www.cse.iitd.ac.in/~rijurekha/cop290_2
 - **doc:** Any notes, like my assembly notes and configuration files, are here. I decided to create the development and production config files in here instead of in a separate config folder as they “document” the configuration.
 - **include:** All project header files. All necessary third-party header files that do not exist under /usr/local/include are also placed here.
 - **lib:** Any libs that get compiled by the project, third party or any needed in development. Prior to deployment, third party libraries get moved to /usr/local/lib where they belong, leaving the project clean enough to compile on our Linux deployment servers. I really use this to test different library versions than the standard.
-- **src:** The application and only the application’s source files.
+- **server:** Server's source files and include files.
+- **client:** Client's source files and include files.
 
 ## Dependencies
 1. SFML: Installation Instructions - [Link 1](https://www.sfml-dev.org/tutorials/2.5/start-linux.php), [Link 2](https://laptrinhx.com/install-sfml-2-5-1-on-ubuntu-18-04-and-clion-184157703/)
