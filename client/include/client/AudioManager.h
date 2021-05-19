@@ -40,6 +40,12 @@ private:
 
     sf::SoundBuffer retreatingBuffer;
     sf::Sound retreatingSound;
+    
+    sf::SoundBuffer VictoryBuffer;
+    sf::Sound VictorySound;
+    
+    sf::SoundBuffer DefeatBuffer;
+    sf::Sound DefeatSound;
 };
 
 

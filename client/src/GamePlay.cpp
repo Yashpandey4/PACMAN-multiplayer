@@ -20,30 +20,31 @@
 
 using namespace sf;
 using namespace std;
+int declared = 0;
+int written = 0;
 
 /**
  * Initialises the play state of the game
  */
 void GamePlay::init()
 {
-    sf::IpAddress serverAddress, myAddress;
-    std::cout << "Enter Server IP address: ";
-    std::cin >> serverAddress;
+    sf::IpAddress myAddress, serverAddress;
+    //std::cout << "Enter Server IP Address: ";
+    //std::cin >> serverAddress;
     logger = new Logger("GamePlay");
     audioManager = new AudioManager();
     stopSirenAndLoop(Sounds::GameStart, false, VOLUME);
     while(audioManager->isPlayingAudio(Sounds::GameStart) || audioManager->isPlayingAudio(Sounds::Death)) {
         continue;
     }
-    myAddress = sf::IpAddress::getPublicAddress();
-    if(serverAddress == myAddress){
-        m_remoteAddress = sf::IpAddress::LocalHost;
+    myAddress = sf::IpAddress::getPublicAddress().toString();
+    if(myAddress == "117.197.217.63"){
+        m_remoteAddress = sf::IpAddress::getLocalAddress().toString();
     }
     else{
-        m_remoteAddress = serverAddress;
+        m_remoteAddress = "117.197.217.63"/*"192.168.1.200"*/;
     }
-    m_remotePort = 54321;
-    logger->log(m_remoteAddress.toString());
+    m_remotePort = 5670;
     m_connects.fill(false);
     sf::Packet packet;
     packet << CommandsToServer::Connect;
@@ -632,7 +633,7 @@ void GamePlay::render(RenderWindow *window, unsigned i) {
     window->draw(orangeGhostSprite);
 
     sf::Font font;
-    if (!font.loadFromFile("assets/open-sans/OpenSans-Light.ttf"))
+    if (!font.loadFromFile("assets/paintbrush/Paintbrush.ttf"))
     {
         std::cout << "Error loading font\n" ;
     }
@@ -640,9 +641,9 @@ void GamePlay::render(RenderWindow *window, unsigned i) {
     ss << "You";
     sf::Text text;
     text.setFont(font);
-    text.setCharacterSize(24);
+    text.setCharacterSize(30);
     text.setStyle(sf::Text::Bold);
-    text.setColor(sf::Color::Blue);
+    text.setColor(sf::Color::White);
     text.setPosition(215.f, 510.f);
     text.setString(ss.str());
     window->draw(text);
@@ -651,9 +652,9 @@ void GamePlay::render(RenderWindow *window, unsigned i) {
     std::ostringstream ss1;
     ss1 << "Opponent";
     text.setFont(font);
-    text.setCharacterSize(24);
+    text.setCharacterSize(30);
     text.setStyle(sf::Text::Bold);
-    text.setColor(sf::Color::Blue);
+    text.setColor(sf::Color::White);
     text.setPosition(675.f, 510.f);
     text.setString(ss1.str());
     window->draw(text);
@@ -662,10 +663,10 @@ void GamePlay::render(RenderWindow *window, unsigned i) {
     std::ostringstream ss2;
     ss2 << "" << m_peers[id].score;
     text.setFont(font);
-    text.setCharacterSize(20);
-    text.setStyle(sf::Text::Bold);
+    text.setCharacterSize(30);
+    //text.setStyle(sf::Text::Bold);
     text.setColor(sf::Color::White);
-    text.setPosition(20.f, 8.f);
+    text.setPosition(20.f, 3.f);
     text.setString(ss2.str());
     window->draw(text);
 
@@ -673,10 +674,10 @@ void GamePlay::render(RenderWindow *window, unsigned i) {
     std::ostringstream ss3;
     ss3 << "" << m_peers[id2].score;
     text.setFont(font);
-    text.setCharacterSize(20);
-    text.setStyle(sf::Text::Bold);
+    text.setCharacterSize(30);
+    //text.setStyle(sf::Text::Bold);
     text.setColor(sf::Color::White);
-    text.setPosition(900.f, 8.f);
+    text.setPosition(900.f, 3.f);
     text.setString(ss3.str());
     window->draw(text);
 
@@ -684,10 +685,10 @@ void GamePlay::render(RenderWindow *window, unsigned i) {
     std::ostringstream ss4;
     ss4 << time << "s";
     text.setFont(font);
-    text.setCharacterSize(20);
-    text.setStyle(sf::Text::Bold);
+    text.setCharacterSize(30);
+    //text.setStyle(sf::Text::Bold);
     text.setColor(sf::Color::White);
-    text.setPosition(470.f, 8.f);
+    text.setPosition(470.f, 3.f);
     text.setString(ss4.str());
     window->draw(text);
 
@@ -696,18 +697,60 @@ void GamePlay::render(RenderWindow *window, unsigned i) {
         int myId = static_cast<int>(m_clientId);
         std::ostringstream ss0;
         if(m_peers[myId].win){
-            ss0 << "YOU WON";
+            sf::Image image;
+            if(written == 0){
+                logger->log("Congratulations! You Won");
+            }
+            std::ostringstream ss0;
+            ss0 << "YOU WIN!";
+            text.setFont(font);
+            text.setCharacterSize(80);
+            //text.setStyle(sf::Text::Bold);
+            text.setColor(sf::Color::White);
+            text.setPosition(320.f, 220.f);
+            text.setString(ss0.str());
+            window->draw(text);
+            /*if (!(image.loadFromFile("assets/win1.png"))){
+                 std::cout << "Cannot load image";
+            }
+            sf::Texture texture;
+            texture.loadFromImage(image);
+            sf::Sprite sprite;
+            sprite.setTexture(texture); 
+            sprite.scale(1.8f, 1.5f);
+            sprite.setPosition(130.f, 130.f);
+            window->draw(sprite);*/
+            stopSirenAndLoop(Sounds::Victory, false, VOLUME);
         }
         else{
-            ss0 << "YOU LOST";
+            sf::Image image;
+            if(written == 0){
+                logger->log("You Lost!");
+            }
+            std::ostringstream ss0;
+            ss0 << "YOU LOSE";
+            text.setFont(font);
+            text.setCharacterSize(80);
+            //text.setStyle(sf::Text::Bold);
+            text.setColor(sf::Color::White);
+            text.setPosition(320.f, 220.f);
+            text.setString(ss0.str());
+            window->draw(text);
+            /*if (!(image.loadFromFile("assets/lose1.png"))){
+                 std::cout << "Cannot load image";
+            }
+            sf::Texture texture;
+            texture.loadFromImage(image);
+            sf::Sprite sprite;
+            sprite.setTexture(texture); 
+            sprite.setPosition(250.f, 150.f);
+            window->draw(sprite);*/
+            stopSirenAndLoop(Sounds::Defeat, false, VOLUME);
         }
-        text.setFont(font);
-        text.setCharacterSize(30);
-        text.setStyle(sf::Text::Bold);
-        text.setColor(sf::Color::Yellow);
-        text.setPosition(430.f, 250.f);
-        text.setString(ss0.str());
-        window->draw(text);
+        written++;
+        if(written == 2){
+            window->close();
+        }
     }
 }
 

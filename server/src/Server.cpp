@@ -28,10 +28,12 @@ int elapsedTime = 0;
  * Initialises the play state of the game
  */
 void Server::init() {
+    elapsedTime = 0;
+    startTime = 0;
     m_socket.setBlocking(false);
-    m_socket.bind(54321);
+    m_socket.bind(5670);
     m_connects.fill(false);
-    std::cout << "Server IP Address: " << sf::IpAddress::getPublicAddress().toString() << endl;
+    std::cout << "Server IP Address: " << sf::IpAddress::/*LocalHost*/getPublicAddress().toString() << endl;
     MazeServer* temp_maze = new MazeServer();
     for(int k = 0; k < maxClients; k++){
         int i;
@@ -69,6 +71,7 @@ void Server::init() {
         m_peers[k].blueGhost = new GhostServer(12,18,1,30);
         m_peers[k].orangeGhost = new GhostServer(16,18,26,30);
         m_peers[k].redGhost->teleport(12, 15);
+        m_peers[k].score = 0;
         waitTime = 0;
     }
     
@@ -86,13 +89,7 @@ void Server::loop() {
         }
         std::this_thread::sleep_for(std::chrono::microseconds(100));
         int x;
-        //if(rand()%2 == 0){
-            x = receiveData();
-        //}
-        //else{
-            //sendState();
-           // continue;
-        //}
+        x = receiveData();
         if(m_connectedClients == 0){
             continue;
         }
@@ -130,9 +127,9 @@ void Server::loop() {
             handleGhostMovement(m_peers[cur_id].orangeGhost);
             if(m_peers[cur_id].pacMan->getPelletsEaten() == 5)
                 m_peers[cur_id].pinkGhost->teleport(13, 14);
-            if(m_peers[cur_id].pacMan->getPelletsEaten() == 50)
+            if(m_peers[cur_id].pacMan->getPelletsEaten() == 10)
                 m_peers[cur_id].blueGhost->teleport(13, 14);
-            if(m_peers[cur_id].pacMan->getPelletsEaten() == 100)
+            if(m_peers[cur_id].pacMan->getPelletsEaten() == 20)
                 m_peers[cur_id].orangeGhost->teleport(13, 14);
             teleportTunnels(m_peers[cur_id].pacMan);
             teleportTunnels(m_peers[cur_id].redGhost);
@@ -151,12 +148,12 @@ void Server::loop() {
                 waitTime++;
             }
 
-            if (m_peers[cur_id].pacMan->isPacmanDead() && dead[k] < 5){
+            /*if (m_peers[cur_id].pacMan->isPacmanDead() && dead[k] < 5){
                 dead[k]++;
                 waitTime++;
-            }
+            }*/
 
-            if (m_peers[cur_id].pacMan->isPacmanDead() && dead[k] == 5) {
+            if (m_peers[cur_id].pacMan->isPacmanDead() /*&& dead[k] == 5*/) {
                 m_peers[cur_id].score = m_peers[cur_id].score - 100;
                 if (m_peers[cur_id].redGhost->isGhostOutOfCage())
                     m_peers[cur_id].redGhost->teleport(13, 14);
@@ -198,8 +195,9 @@ void Server::loop() {
             
         } 
         auto t2 = chrono::high_resolution_clock::now();
-        if(chrono::duration_cast<chrono::seconds>( t2 - t1 ).count() > 30){
-            for(int l = 0; l < 5000; l++){
+        if(chrono::duration_cast<chrono::seconds>( t2 - t1 ).count() > 60){
+            for(int l = 0; l < 900000; l++){
+                cur_id = (cur_id + 1)%2;
                 sendResult();
             }
             

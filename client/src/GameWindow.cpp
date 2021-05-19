@@ -6,7 +6,7 @@
 #include "client/GameWindow.h"
 #include "client/GamePlay.h"
 #include "client/LoadSprites.h"
-
+#include <iostream>
 using namespace sf;
 
 RenderWindow GameWindow::window;
@@ -20,8 +20,21 @@ StateMachine GameWindow::stateMachine;
 void GameWindow::init(int i) {
     logger.log("Game Started");
     LoadSprites::load();
-    stateMachine.addState(new GamePlay);
     window.create(VideoMode(966, 550), "Namco PacMan");
+    sf::Image image;
+    if (!(image.loadFromFile("assets/pacman-logo.png"))){
+         std::cout << "Cannot load image";
+    }
+    sf::Texture texture;
+    texture.loadFromImage(image);
+    sf::Sprite sprite;
+    sprite.setTexture(texture); 
+    sprite.scale(996.f/(float)(sprite.getLocalBounds().width*1.2), 550.f/(float)(sprite.getLocalBounds().height)*0.5);
+    sprite.setPosition(70.f, 100.f);
+    window.draw(sprite);
+    window.display();
+    stateMachine.addState(new GamePlay);
+    
     
 }
 

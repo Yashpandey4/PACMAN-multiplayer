@@ -12,6 +12,8 @@
 #define AUDIO_MUNCH "assets/Sound/munch.wav"
 #define AUDIO_SIREN "assets/Sound/siren_1.wav"
 #define AUDIO_RETREATING "assets/Sound/retreating.wav"
+#define AUDIO_VICTORY "assets/Sound/win.wav"
+#define AUDIO_DEFEAT "assets/Sound/defeat.wav"
 
 #define VOLUME 50
 #define VOLUME_MUNCH 10
@@ -25,7 +27,9 @@ enum class Sounds {
     Munch,
     GameStart,
     Siren,
-    Retreating
+    Retreating,
+    Victory,
+    Defeat
 };
 
 #endif //PACMAN_2PLAYER_AUDIO_H

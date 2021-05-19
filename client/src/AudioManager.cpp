@@ -28,6 +28,12 @@ AudioManager::AudioManager() {
 
     retreatingBuffer.loadFromFile(AUDIO_RETREATING);
     retreatingSound.setBuffer(retreatingBuffer);
+
+    VictoryBuffer.loadFromFile(AUDIO_VICTORY);
+    VictorySound.setBuffer(VictoryBuffer);
+
+    DefeatBuffer.loadFromFile(AUDIO_DEFEAT);
+    DefeatSound.setBuffer(DefeatBuffer);
 }
 
 /**
@@ -74,6 +80,16 @@ void AudioManager::playSound(Sounds soundType, bool loop, int volume) {
             retreatingSound.setVolume(volume);
             retreatingSound.play();
             break;
+        case Sounds::Victory:
+            VictorySound.setLoop(loop);
+            VictorySound.setVolume(volume);
+            VictorySound.play();
+            break;
+        case Sounds::Defeat:
+            DefeatSound.setLoop(loop);
+            DefeatSound.setVolume(volume);
+            DefeatSound.play();
+            break;
     }
 }
 
@@ -105,6 +121,12 @@ void AudioManager::stopSound(Sounds soundType) {
         case Sounds::Retreating:
             retreatingSound.stop();
             break;
+        case Sounds::Victory:
+            VictorySound.stop();
+            break;
+        case Sounds::Defeat:
+            DefeatSound.stop();
+            break;
         case Sounds::None:
             gameStartSound.stop();
             munchSound.stop();
@@ -113,6 +135,8 @@ void AudioManager::stopSound(Sounds soundType) {
             powerSnackSound.stop();
             sirenSound.stop();
             retreatingSound.stop();
+            VictorySound.stop();
+            DefeatSound.stop();
             break;
     }
 }
@@ -145,6 +169,12 @@ bool AudioManager::isPlayingAudio(Sounds soundType) {
             break;
         case Sounds::Retreating:
             return retreatingSound.getStatus() == retreatingSound.Playing;
+            break;
+        case Sounds::Victory:
+            return VictorySound.getStatus() == VictorySound.Playing;
+            break;
+        case Sounds::Defeat:
+            return DefeatSound.getStatus() == DefeatSound.Playing;
             break;
     }
 }
