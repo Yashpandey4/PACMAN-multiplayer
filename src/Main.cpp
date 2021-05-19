@@ -4,6 +4,10 @@
 
 #include "GameWindow.h"
 
+/**
+ * Serves as the entry point of the game
+ * @return return 0 in the main function means that the program executed successfully. return 1 in the main function means that the program does not execute successfully and there is some error.
+ */
 int main()
 {
     GameWindow::init();

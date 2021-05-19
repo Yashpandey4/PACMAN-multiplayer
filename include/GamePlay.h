@@ -7,10 +7,12 @@
 
 #include "State.h"
 #include "Logger.h"
+#include "Maze.h"
 
 class GamePlay : public State {
 private:
     Logger* logger;
+    Maze* maze;
 
 public:
     void init();
