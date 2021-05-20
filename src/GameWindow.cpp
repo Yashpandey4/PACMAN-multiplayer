@@ -20,7 +20,7 @@ StateMachine GameWindow::stateMachine;
 void GameWindow::init() {
     logger.log("Game Started");
     LoadSprites::load();
-    window.create(VideoMode(448, 596), "Namco PacMan");
+    window.create(VideoMode(480, 596), "Namco PacMan");
     stateMachine.addState(new GamePlay);
 }
 

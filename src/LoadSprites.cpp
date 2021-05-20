@@ -11,7 +11,8 @@ Texture LoadSprites::maze;
 Logger LoadSprites::logger("LoadSprites");
 std::map<int, sf::Sprite*>  LoadSprites::spritesMap;
 std::map<int, Animation> LoadSprites::animations;
-sf::Sprite* LoadSprites::mazePieces[32];
+sf::Sprite* LoadSprites::mazePieces[5];
+sf::Sprite* LoadSprites::mazePieces_temp[32];
 
 /**
  * This is the main function which loads all the sprites, including characters and mazes
@@ -20,13 +21,20 @@ void LoadSprites::load() {
 
     maze.loadFromFile("assets/maze.png");
     int index = 0;
+    
     for(int i=0; i<8; i++) {
         for(int j=0; j<4;j++) {
-            mazePieces[index] = new sf::Sprite(maze, sf::IntRect(i*8,j*8,8,8));
-            mazePieces[index]->setScale(2.0f, 2.0f);
+            mazePieces_temp[index] = new sf::Sprite(maze, sf::IntRect(i*8,j*8,8,8));
+            mazePieces_temp[index]->setScale(2.0f, 2.0f);
             index++;
         }
     }
+    mazePieces[0] = mazePieces_temp[26];
+    mazePieces[1] = new sf::Sprite(maze, sf::IntRect(0,4,1,1));
+    mazePieces[1]->setScale(16.0f, 16.0f);
+    mazePieces[2] = mazePieces_temp[31];
+    mazePieces[3] = mazePieces_temp[27];
+    mazePieces[4] = mazePieces_temp[30];
 
     spriteFile.loadFromFile("assets/characters.png");
 
