@@ -29,20 +29,20 @@ int written = 0;
 void GamePlay::init()
 {
     sf::IpAddress myAddress, serverAddress;
-    //std::cout << "Enter Server IP Address: ";
-    //std::cin >> serverAddress;
+    std::cout << "Enter Server IP Address: ";
+    std::cin >> serverAddress;
     logger = new Logger("GamePlay");
     audioManager = new AudioManager();
     stopSirenAndLoop(Sounds::GameStart, false, VOLUME);
-    while(audioManager->isPlayingAudio(Sounds::GameStart) || audioManager->isPlayingAudio(Sounds::Death)) {
-        continue;
-    }
+    //while(audioManager->isPlayingAudio(Sounds::GameStart) || audioManager->isPlayingAudio(Sounds::Death)) {
+        //continue;
+    //}
     myAddress = sf::IpAddress::getPublicAddress().toString();
-    if(myAddress == "117.197.217.63"){
+    if(myAddress == serverAddress){
         m_remoteAddress = sf::IpAddress::getLocalAddress().toString();
     }
     else{
-        m_remoteAddress = "117.197.217.63"/*"192.168.1.200"*/;
+        m_remoteAddress = serverAddress/*"192.168.1.200"*/;
     }
     m_remotePort = 5670;
     m_connects.fill(false);
@@ -677,17 +677,22 @@ void GamePlay::render(RenderWindow *window, unsigned i) {
     text.setCharacterSize(30);
     //text.setStyle(sf::Text::Bold);
     text.setColor(sf::Color::White);
-    text.setPosition(900.f, 3.f);
+    text.setPosition(880.f, 3.f);
     text.setString(ss3.str());
     window->draw(text);
 
     // Time
     std::ostringstream ss4;
-    ss4 << time << "s";
+    ss4 << (60 - time) << "s";
     text.setFont(font);
     text.setCharacterSize(30);
     //text.setStyle(sf::Text::Bold);
-    text.setColor(sf::Color::White);
+    if(60 - time <= 10){
+        text.setColor(sf::Color::Red);
+    }
+    else{
+        text.setColor(sf::Color::White);
+    }
     text.setPosition(470.f, 3.f);
     text.setString(ss4.str());
     window->draw(text);
@@ -707,7 +712,7 @@ void GamePlay::render(RenderWindow *window, unsigned i) {
             text.setCharacterSize(80);
             //text.setStyle(sf::Text::Bold);
             text.setColor(sf::Color::White);
-            text.setPosition(320.f, 220.f);
+            text.setPosition(315.f, 220.f);
             text.setString(ss0.str());
             window->draw(text);
             /*if (!(image.loadFromFile("assets/win1.png"))){
@@ -733,7 +738,7 @@ void GamePlay::render(RenderWindow *window, unsigned i) {
             text.setCharacterSize(80);
             //text.setStyle(sf::Text::Bold);
             text.setColor(sf::Color::White);
-            text.setPosition(320.f, 220.f);
+            text.setPosition(315.f, 220.f);
             text.setString(ss0.str());
             window->draw(text);
             /*if (!(image.loadFromFile("assets/lose1.png"))){
