@@ -12,7 +12,7 @@ SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 CFLAGS := -g -O3 -flto -march=native -mtune=knl # -Wall
-LIB := -pthread -std=c++11 -L lib -lsfml-graphics -lsfml-window -lsfml-system
+LIB := -pthread -std=c++11 -L lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 INC := -I include
 
 $(TARGET): $(OBJECTS)

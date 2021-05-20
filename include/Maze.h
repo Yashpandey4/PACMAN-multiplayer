@@ -22,9 +22,6 @@ public:
 
     static bool isMazeIntersection(int x, int y);
 
-    void removePellets(PacMan* pacMan, Ghost* ghost1, Ghost* ghost2, Ghost* ghost3, Ghost* ghost4);
-
-private:
     int cells[SIZE_X][SIZE_Y];
 };
 

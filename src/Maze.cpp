@@ -1,4 +1,5 @@
 #include "Maze.h"
+#include "GamePlay.h"
 
 /**
  * @TODO: generate algorithmically using DFS. Hardcoded now for testing.
@@ -83,22 +84,3 @@ bool Maze::isMazeIntersection(int x, int y)
            || (x == 13 && y == 14) || (x == 14 && y == 15);
 }
 
-/**
- * Removes the pellets from the game screen when PacMan eats them
- * @param pacMan - the pacMan character eating the pellets
- */
-void Maze::removePellets(PacMan* pacMan, Ghost* ghost1, Ghost* ghost2, Ghost* ghost3, Ghost* ghost4) {
-    // Pellet Tile -> Blank Tile
-    if(cells[pacMan->getCellX()][pacMan->getCellY()] == 26) {
-        cells[pacMan->getCellX()][pacMan->getCellY()] = 30;
-        pacMan->eatPellets();
-    }
-    // Power Pellet Tile -> Blank Tile
-    else if(cells[pacMan->getCellX()][pacMan->getCellY()] == 27) {
-        cells[pacMan->getCellX()][pacMan->getCellY()] = 30;
-        ghost1->setGhostFrightened(true);
-        ghost2->setGhostFrightened(true);
-        ghost3->setGhostFrightened(true);
-        ghost4->setGhostFrightened(true);
-    }
-}

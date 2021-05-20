@@ -11,6 +11,7 @@
 #include "PacMan.h"
 #include "Ghost.h"
 #include "Character.h"
+#include "AudioManager.h"
 
 class GamePlay : public State {
 private:
@@ -21,6 +22,7 @@ private:
     Ghost* pinkGhost;
     Ghost* blueGhost;
     Ghost* orangeGhost;
+    AudioManager* audioManager;
 
     int waitTime;
 
@@ -47,7 +49,11 @@ public:
 
     void keyReleased(int code);
 
+    void removePellets();
+
     void setChaseBehaviour();
+
+    void stopSirenAndLoop(Sounds sound, bool isLoop, int volume);
 };
 
 
