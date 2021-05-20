@@ -5,7 +5,8 @@ Find exact project details [here](https://www.cse.iitd.ac.in/~rijurekha/cop290_2
 1. From the project root, type `sh scripts/build.sh` in the terminal
 2. To host the game, type `sh scripts/run.sh server`
 3. To play the game, type `sh scripts/run.sh client`
-4. Type `make clean` to remove the compiled objects and binaries
+4. Alternatively, you can use `make`, `make client` and `make server` for the above tasks.
+5. Type `make clean` to remove the compiled objects and binaries
 ``
 ## Project Structure
 - **assets:** All non-code files required for program execution go here. These are static files and needn't be compiled.
