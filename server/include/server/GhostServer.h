@@ -24,7 +24,7 @@ public:
 
     GhostServer(int cellPositionX, int cellPositionY, int destinationX, int destinationY);
 
-    constexpr static const float GHOST_SPEED = 0.04f;
+    constexpr static const float GHOST_SPEED = 0.03f;
 
     void setGhostDestination(int x, int y);
 
