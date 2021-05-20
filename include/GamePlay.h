@@ -22,6 +22,8 @@ private:
     Ghost* blueGhost;
     Ghost* orangeGhost;
 
+    int waitTime;
+
     bool isPacManMovementAllowed();
 
     void handleGhostMovement(Ghost* ghost);
@@ -29,6 +31,10 @@ private:
     bool isGhostMovementAllowed(Ghost* ghost);
 
     float calculateGhostDistance(Ghost* ghost, int x, int y);
+
+    void teleportTunnels(Character* character);
+
+    void handleGhostFrightening(Ghost* ghost);
 
 public:
     void init();

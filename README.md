@@ -1,6 +1,11 @@
 # Multiplayer PACMAN
 Find exact project details [here](https://www.cse.iitd.ac.in/~rijurekha/cop290_2021.html) under task 2.
 
+## Compilation and Execution
+1. From the project root, type `make` in the terminal
+2. To execute the project, type `./bin/pacman`
+3. Type `make clean` to remove the compiled objects and binaries
+
 ## Project Structure
 - **assets:** All non-code files required for program execution go here. These are static files and needn't be compiled.
 - **bin:** The output executables go here, both for the app and for any tests and spikes.

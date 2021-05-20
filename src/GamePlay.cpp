@@ -11,6 +11,7 @@
 #include "SFML/Graphics.hpp"
 
 #include <cmath>
+#include <Entity.h>
 
 using namespace sf;
 
@@ -26,16 +27,18 @@ void GamePlay::init() {
     blueGhost = new Ghost(11,17,26,32);
     orangeGhost = new Ghost(15,17,1,32);
 
-    redGhost->ghostTeleport(13, 14);
+    redGhost->teleport(13, 14);
 
     logger->log("Playing State Initialised");
+
+    waitTime = 0;
 }
 
 /**
  * Specifies actions which keep the play state of the game running in a loop
  */
 void GamePlay::loop() {
-    if(isPacManMovementAllowed())
+    if(isPacManMovementAllowed() && !pacMan->isPacmanDead())
         pacMan->movePacman();
     else
         pacMan->stopPacman();
@@ -53,11 +56,55 @@ void GamePlay::loop() {
     handleGhostMovement(orangeGhost);
 
     if(pacMan->getPelletsEaten() == 5)
-        pinkGhost->ghostTeleport(13,14);
+        pinkGhost->teleport(13, 14);
     if(pacMan->getPelletsEaten() == 50)
-        blueGhost->ghostTeleport(13,14);
+        blueGhost->teleport(13, 14);
     if(pacMan->getPelletsEaten() == 100)
-        orangeGhost->ghostTeleport(13,14);
+        orangeGhost->teleport(13, 14);
+
+    teleportTunnels(pacMan);
+    teleportTunnels(redGhost);
+    teleportTunnels(pinkGhost);
+    teleportTunnels(blueGhost);
+    teleportTunnels(orangeGhost);
+
+    handleGhostFrightening(redGhost);
+    handleGhostFrightening(pinkGhost);
+    handleGhostFrightening(blueGhost);
+    handleGhostFrightening(orangeGhost);
+
+    if (pacMan->getPelletsEaten() == 240) {
+        redGhost->teleport(-2,-2);
+        pinkGhost->teleport(-2,-2);
+        blueGhost->teleport(-2,-2);
+        orangeGhost->teleport(-2,-2);
+        waitTime++;
+    }
+
+    if (pacMan->isPacmanDead())
+        waitTime++;
+
+    if (waitTime == 200) {
+        if (pacMan->isPacmanDead()) {
+            if (redGhost->isGhostOutOfCage())
+                redGhost->teleport(13, 14);
+            if (pinkGhost->isGhostOutOfCage())
+                pinkGhost->teleport(13,14);
+            if (blueGhost->isGhostOutOfCage())
+                blueGhost->teleport(13,14);
+            if (orangeGhost->isGhostOutOfCage())
+                orangeGhost->teleport(13,14);
+            pacMan->teleport(13,26);
+            pacMan->setPacmanDead(false);
+            waitTime = 0;
+            logger->log("PacMan Dead. Resetting Game.");
+        }
+        else {
+            GamePlay::init();
+            waitTime = 0;
+        }
+    }
+
 }
 
 /**
@@ -117,6 +164,7 @@ void GamePlay::setChaseBehaviour() {
  * @param window - Game Window
  */
 void GamePlay::render(RenderWindow *window) {
+    // Load Maze
     for (int i = 0; i < Maze::SIZE_X; i++)
     {
         for (int j = 0; j < Maze::SIZE_Y; j++)
@@ -126,17 +174,40 @@ void GamePlay::render(RenderWindow *window) {
         }
     }
 
+    // Load Character Sprites and animate it
     Sprite pacManSprite;
     Sprite redGhostSprite;
     Sprite pinkGhostSprite;
     Sprite blueGhostSprite;
     Sprite orangeGhostSprite;
 
-    pacManSprite = *LoadSprites::spritesMap.at(LoadSprites::PAC_MAN);
-    redGhostSprite = *LoadSprites::spritesMap.at(LoadSprites::RED_GHOST);
-    pinkGhostSprite = *LoadSprites::spritesMap.at(LoadSprites::PINK_GHOST);
-    blueGhostSprite = *LoadSprites::spritesMap.at(LoadSprites::BLUE_GHOST);
-    orangeGhostSprite = *LoadSprites::spritesMap.at(LoadSprites::ORANGE_GHOST);
+    if (pacMan->getDirections().empty())
+        pacManSprite = *LoadSprites::get(Entity::PAC_MAN, false, Direction::UNSET);
+    else
+        pacManSprite = *LoadSprites::get(Entity::PAC_MAN, true, pacMan->getDirections().front());
+
+    if (pacMan->isPacmanDead())
+        pacManSprite = *LoadSprites::get(Entity::DEAD_PAC_MAN, true, Direction::UNSET);
+
+    if (!redGhost->isGhostFrightened())
+        redGhostSprite = *LoadSprites::get(Entity::RED_GHOST, redGhost->isGhostOutOfCage(), redGhost->getDirection());
+    else
+        redGhostSprite = *LoadSprites::get(Entity::FRIGHTENED_GHOST, redGhost->isGhostOutOfCage(), redGhost->getDirection());
+
+    if (!pinkGhost->isGhostFrightened())
+        pinkGhostSprite = *LoadSprites::get(Entity::PINK_GHOST, pinkGhost->isGhostOutOfCage(), pinkGhost->getDirection());
+    else
+        pinkGhostSprite = *LoadSprites::get(Entity::FRIGHTENED_GHOST, pinkGhost->isGhostOutOfCage(), pinkGhost->getDirection());
+
+    if (!blueGhost->isGhostFrightened())
+        blueGhostSprite = *LoadSprites::get(Entity::BLUE_GHOST, blueGhost->isGhostOutOfCage(), blueGhost->getDirection());
+    else
+        blueGhostSprite = *LoadSprites::get(Entity::FRIGHTENED_GHOST, blueGhost->isGhostOutOfCage(), blueGhost->getDirection());
+
+    if (!orangeGhost->isGhostFrightened())
+        orangeGhostSprite = *LoadSprites::get(Entity::ORANGE_GHOST, orangeGhost->isGhostOutOfCage(), orangeGhost->getDirection());
+    else
+        orangeGhostSprite = *LoadSprites::get(Entity::FRIGHTENED_GHOST, orangeGhost->isGhostOutOfCage(), orangeGhost->getDirection());
 
     pacManSprite.setPosition(pacMan->getScreenPositionX(),pacMan->getScreenPositionY());
     redGhostSprite.setPosition(redGhost->getScreenPositionX(), redGhost->getScreenPositionY());
@@ -281,6 +352,38 @@ bool GamePlay::isGhostMovementAllowed(Ghost *ghost) {
         default:
             return false;
     }
+}
+
+/**
+ * This function helps the characters teleport from one end of the tunnel to the other
+ * @param character
+ */
+void GamePlay::teleportTunnels(Character *character) {
+    if (character->getCellX() == 0 && character->getCellY() == 17)
+        character->teleport(26, 17);
+    else if (character->getCellX() == 27 && character->getCellY() == 17)
+        character->teleport(1, 17);
+}
+
+/**
+ * @TODO: Automate tunnel locations in a random maze instead of hardcoding
+ * Handles the frightened state of ghosts, when pacman eats power pellets
+ * @param ghost - The frightened ghost in question
+ */
+void GamePlay::handleGhostFrightening(Ghost *ghost) {
+     if (pacMan->getCellX() == ghost->getCellX() && pacMan->getCellY() == ghost->getCellY()) {
+         if (ghost->isGhostFrightened()) {
+             ghost->teleport(13, 14);
+             ghost->setGhostFrightened(false);
+         }
+         else {
+             pacMan->setPacmanDead(true);
+             redGhost->teleport(-2, -2);
+             pinkGhost->teleport(-2,-2);
+             blueGhost->teleport(-2,-2);
+             orangeGhost->teleport(-2,-2);
+         }
+     }
 }
 
 

@@ -48,9 +48,9 @@ public:
 
     void setGhostFrightened(bool ghostFrightened);
 
-    int getGhostFrightened();
+    int isGhostFrightened();
 
-    void ghostTeleport(int x, int y);
+    void teleport(int x, int y);
 
 };
 

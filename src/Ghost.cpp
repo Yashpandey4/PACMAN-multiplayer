@@ -105,7 +105,7 @@ void Ghost::setGhostDecision(bool ghostDecision) {
  */
 void Ghost::setGhostFrightened(bool ghostFrightened) {
     if(ghostFrightened)
-        Ghost::ghostFrightened = 2000;
+        Ghost::ghostFrightened = 8000;
     else
         Ghost::ghostFrightened = 0;
 }
@@ -138,7 +138,7 @@ bool Ghost::isGhostDecision() const {
  * Getter for ghostFrightened
  * @return ghostFrightened
  */
-int Ghost::getGhostFrightened() {
+int Ghost::isGhostFrightened() {
     if (ghostFrightened > 0 )
         ghostFrightened--;
     return ghostFrightened > 0;
@@ -149,7 +149,7 @@ int Ghost::getGhostFrightened() {
  * @param x - coordinate
  * @param y - coordinate
  */
-void Ghost::ghostTeleport(int x, int y) {
+void Ghost::teleport(int x, int y) {
     Character::teleport(x, y);
     ghostOutOfCage = true;
 }

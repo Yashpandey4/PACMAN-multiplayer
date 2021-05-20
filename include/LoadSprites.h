@@ -7,25 +7,24 @@
 
 #include "SFML/Graphics.hpp"
 #include "Logger.h"
+#include "Animation.h"
+#include "Direction.h"
 
 class LoadSprites {
 private:
     static sf::Texture spriteFile;
-    // static std::map<int, Animation> animations;
+    static std::map<int, sf::Sprite*> spritesMap;
+    static std::map<int, Animation> animations;
     static sf::Texture maze;
     static Logger logger;
-    static void loadSpriteFromFile(int key, int rectLeft, int rectTop);
+    static void loadSpriteFromFile(int key, int rectLeft, int rectTop, int animationFrames);
 
 public:
     static void load();
-    static sf::Sprite* mazePieces[];
-    static std::map<int, sf::Sprite*> spritesMap;
 
-    static const int PAC_MAN;
-    static const int BLUE_GHOST;
-    static const int ORANGE_GHOST;
-    static const int PINK_GHOST;
-    static const int RED_GHOST;
+    static sf::Sprite* mazePieces[];
+
+    static sf::Sprite* get(int value, bool animated, Direction facing);
 };
 
 
