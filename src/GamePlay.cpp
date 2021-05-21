@@ -24,7 +24,7 @@ using namespace sf;
 void GamePlay::init() {
     logger = new Logger("GamePlay");
     maze = new Maze();
-    pacMan = new PacMan();
+    pacMan = new PacMan(1, 6);
     redGhost = new Ghost(13,14,3,4);
     pinkGhost = new Ghost(13,17,23,4);
     blueGhost = new Ghost(11,17,26,32);
@@ -33,9 +33,10 @@ void GamePlay::init() {
     redGhost->teleport(13, 14);
 
     audioManager = new AudioManager();
-    stopSirenAndLoop(Sounds::GameStart, false, VOLUME);
+//    stopSirenAndLoop(Sounds::GameStart, false, VOLUME); // commented for testing
 
     waitTime = 0;
+    moveNum = 0;
 }
 
 /**
@@ -50,26 +51,28 @@ void GamePlay::loop() {
     if(isPacManMovementAllowed() && !pacMan->isPacmanDead())
         pacMan->movePacman();
     else
-        pacMan->stopPacman();
+        pacMan->setPacmanDecision(true);
 
     if (maze->isMazeIntersection(pacMan->getCellX(), pacMan->getCellY()))
-        pacMan->stopPacman();
+        pacMan->setPacmanDecision(true);
 
     removePellets();
+    handlePacmanMovement();
+    setPacmanMoveBehaviour();
+//    setChaseBehaviour();
 
-    setChaseBehaviour();
+    // Comment for testing pacman
+//    handleGhostMovement(redGhost);
+//    handleGhostMovement(pinkGhost);
+//    handleGhostMovement(blueGhost);
+//    handleGhostMovement(orangeGhost);
 
-    handleGhostMovement(redGhost);
-    handleGhostMovement(pinkGhost);
-    handleGhostMovement(blueGhost);
-    handleGhostMovement(orangeGhost);
-
-    if(pacMan->getPelletsEaten() == 5)
-        pinkGhost->teleport(13, 14);
-    if(pacMan->getPelletsEaten() == 50)
-        blueGhost->teleport(13, 14);
-    if(pacMan->getPelletsEaten() == 100)
-        orangeGhost->teleport(13, 14);
+//    if(pacMan->getPelletsEaten() == 5)
+//        pinkGhost->teleport(13, 14);
+//    if(pacMan->getPelletsEaten() == 50)
+//        blueGhost->teleport(13, 14);
+//    if(pacMan->getPelletsEaten() == 100)
+//        orangeGhost->teleport(13, 14);
 
     teleportTunnels(pacMan);
     teleportTunnels(redGhost);
@@ -93,7 +96,7 @@ void GamePlay::loop() {
     if (pacMan->isPacmanDead())
         waitTime++;
 
-    if (waitTime == 200) {
+    if (waitTime == 200 || moveNum >= pacMan->moves.size()) {
         if (pacMan->isPacmanDead()) {
             if (redGhost->isGhostOutOfCage())
                 redGhost->teleport(13, 14);
@@ -103,7 +106,7 @@ void GamePlay::loop() {
                 blueGhost->teleport(13,14);
             if (orangeGhost->isGhostOutOfCage())
                 orangeGhost->teleport(13,14);
-            pacMan->teleport(13,26);
+            pacMan->teleport(12,26);
             pacMan->setPacmanDead(false);
             waitTime = 0;
             logger->log("PacMan Dead. Resetting Game.");
@@ -117,54 +120,58 @@ void GamePlay::loop() {
 
 }
 
+void GamePlay::setPacmanMoveBehaviour() {
+    pacMan->setPacManDestination(pacMan->moves[moveNum].first,pacMan->moves[moveNum].second);
+//    logger->log(to_string(pacMan->getCellX()) +", "+to_string(pacMan->getCellY()));
+}
+
+
 /**
  * In “Chase” mode, the ghosts are trying to find and capture Pac-Man.
  * Each of the four ghosts has a unique behaviour while chasing Pac-Man.
  * This function defines this behaviour
  */
 void GamePlay::setChaseBehaviour() {
-    if (!pacMan->getDirections().empty()) {
-        // Red Ghost Directly Chases Pacman
-        // Blinky the red ghost is very aggressive in its approach while chasing Pac-Man and will follow Pac-Man once located.
-        if (!redGhost->isScatterGhosts()) {
-            redGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
-        }
+    // Red Ghost Directly Chases Pacman
+    // Blinky the red ghost is very aggressive in its approach while chasing Pac-Man and will follow Pac-Man once located.
+    if (!redGhost->isScatterGhosts()) {
+        redGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
+    }
 
-        // Pink Ghost is off from PacMan's location by 4 cells (lurks around PacMan)
-        // Pinky the pink ghost will attempt to ambush Pac-Man by trying to get in front of him and cut him off.
-        if (!pinkGhost->isScatterGhosts()) {
-            switch (pacMan->getDirections().front()) {
-                case Direction::UP:
-                    pinkGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY() - 4);
-                    break;
-                case Direction::DOWN:
-                    pinkGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY() + 4);
-                    break;
-                case Direction::LEFT:
-                    pinkGhost->setGhostDestination(pacMan->getCellX() - 4, pacMan->getCellY());
-                    break;
-                case Direction::RIGHT:
-                    pinkGhost->setGhostDestination(pacMan->getCellX() + 4, pacMan->getCellY());
-                    break;
-            }
+    // Pink Ghost is off from PacMan's location by 4 cells (lurks around PacMan)
+    // Pinky the pink ghost will attempt to ambush Pac-Man by trying to get in front of him and cut him off.
+    if (!pinkGhost->isScatterGhosts()) {
+        switch (pacMan->getDirection()) {
+            case Direction::UP:
+                pinkGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY() - 4);
+                break;
+            case Direction::DOWN:
+                pinkGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY() + 4);
+                break;
+            case Direction::LEFT:
+                pinkGhost->setGhostDestination(pacMan->getCellX() - 4, pacMan->getCellY());
+                break;
+            case Direction::RIGHT:
+                pinkGhost->setGhostDestination(pacMan->getCellX() + 4, pacMan->getCellY());
+                break;
         }
+    }
 
-        // Blue Ghost Patrols with direction close to Pacman decided by distance between the two
-        // Inky the cyan ghost will patrol an area and is not very predictable in this mode.
-        if (!blueGhost->isScatterGhosts()) {
-            blueGhost->setGhostDestination(pacMan->getCellX() + (redGhost->getCellX() - pacMan->getCellX()), pacMan->getCellY() + (
-                    redGhost->getCellY() - pacMan->getCellY()));
+    // Blue Ghost Patrols with direction close to Pacman decided by distance between the two
+    // Inky the cyan ghost will patrol an area and is not very predictable in this mode.
+    if (!blueGhost->isScatterGhosts()) {
+        blueGhost->setGhostDestination(pacMan->getCellX() + (redGhost->getCellX() - pacMan->getCellX()), pacMan->getCellY() + (
+                redGhost->getCellY() - pacMan->getCellY()));
+    }
+
+    // Orange Ghost chases Pacman if it is close to clyde else it minds its own business.
+    // Clyde the orange ghost is moving in a random fashion and seems to stay out of the way of Pac-Man.
+    if (!orangeGhost->isScatterGhosts()) {
+        if (sqrt(pow((orangeGhost->getCellX() - (pacMan->getCellX())), 2) + pow((orangeGhost->getCellY() - (pacMan->getCellY())), 2)) < 9) {
+            orangeGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
         }
-
-        // Orange Ghost chases Pacman if it is close to clyde else it minds its own business.
-        // Clyde the orange ghost is moving in a random fashion and seems to stay out of the way of Pac-Man.
-        if (!orangeGhost->isScatterGhosts()) {
-            if (sqrt(pow((orangeGhost->getCellX() - (pacMan->getCellX())), 2) + pow((orangeGhost->getCellY() - (pacMan->getCellY())), 2)) < 9) {
-                orangeGhost->setGhostDestination(pacMan->getCellX(), pacMan->getCellY());
-            }
-            else {
-                orangeGhost->setGhostDestination(1, 32);
-            }
+        else {
+            orangeGhost->setGhostDestination(1, 32);
         }
     }
 }
@@ -191,10 +198,7 @@ void GamePlay::render(RenderWindow *window) {
     Sprite blueGhostSprite;
     Sprite orangeGhostSprite;
 
-    if (pacMan->getDirections().empty())
-        pacManSprite = *LoadSprites::get(Entity::PAC_MAN, false, Direction::UNSET);
-    else
-        pacManSprite = *LoadSprites::get(Entity::PAC_MAN, true, pacMan->getDirections().front());
+    pacManSprite = *LoadSprites::get(Entity::PAC_MAN, true, pacMan->getDirection());
 
     if (pacMan->isPacmanDead())
         pacManSprite = *LoadSprites::get(Entity::DEAD_PAC_MAN, true, Direction::UNSET);
@@ -237,21 +241,6 @@ void GamePlay::render(RenderWindow *window) {
  * @param code - key code
  */
 void GamePlay::keyPressed(int code) {
-    // logger->log("Key Pressed: "+to_string(code));
-    switch (code) {
-        case Keyboard::Up:
-            pacMan->queueDirection(Direction::UP);
-            break;
-        case Keyboard::Down:
-            pacMan->queueDirection(Direction::DOWN);
-            break;
-        case Keyboard::Left:
-            pacMan->queueDirection(Direction::LEFT);
-            break;
-        case Keyboard::Right:
-            pacMan->queueDirection(Direction::RIGHT);
-            break;
-    }
 }
 
 /**
@@ -265,23 +254,22 @@ void GamePlay::keyReleased(int code) {}
  * @return True if pacman can move, false otherwise
  */
 bool GamePlay::isPacManMovementAllowed() {
-    if (!pacMan->getDirections().empty()) {
-        switch (pacMan->getDirections().front()) {
-            case Direction::UP:
-                return !maze->isCellBlockingCharacter(pacMan->getCellX(), pacMan->getCellY() - 1);
-                break;
-            case Direction::DOWN:
-                return !maze->isCellBlockingCharacter(pacMan->getCellX(), pacMan->getCellY() + 1);
-                break;
-            case Direction::LEFT:
-                return !maze->isCellBlockingCharacter(pacMan->getCellX() - 1, pacMan->getCellY());
-                break;
-            case Direction::RIGHT:
-                return !maze->isCellBlockingCharacter(pacMan->getCellX() + 1, pacMan->getCellY());
-                break;
-        }
+    switch (pacMan->getDirection()) {
+        case Direction::UP:
+            return !maze->isCellBlockingCharacter(pacMan->getCellX(), pacMan->getCellY() - 1);
+            break;
+        case Direction::DOWN:
+            return !maze->isCellBlockingCharacter(pacMan->getCellX(), pacMan->getCellY() + 1);
+            break;
+        case Direction::LEFT:
+            return !maze->isCellBlockingCharacter(pacMan->getCellX() - 1, pacMan->getCellY());
+            break;
+        case Direction::RIGHT:
+            return !maze->isCellBlockingCharacter(pacMan->getCellX() + 1, pacMan->getCellY());
+            break;
+        default:
+            return false;
     }
-    return true;
 }
 
 /**
@@ -298,6 +286,51 @@ float GamePlay::calculateGhostDistance(Ghost *ghost, int x, int y) {
         distance = (float) sqrt(pow((ghost->getDestinationX() - (ghost->getCellX() + x)), 2) + pow((ghost->getDestinationY() - (ghost->getCellY() + y)), 2));
     }
     return distance;
+}
+
+float GamePlay::calculatePacmanDistance(int x, int y) {
+    float distance = 1000000.0f;
+    if (!maze->isCellBlockingCharacter(pacMan->getCellX() + x, pacMan->getCellY() + y)) {
+        // ((x2-x1)^2 - (Y2-Y1)^2)^(1/2)
+        distance = (float) sqrt(pow((pacMan->getDestinationX() - (pacMan->getCellX() + x)), 2) + pow((pacMan->getDestinationY() - (pacMan->getCellY() + y)), 2));
+    }
+    return distance;
+}
+
+void GamePlay::handlePacmanMovement() {
+    if((pacMan->getCellX() == pacMan->getDestinationX() && pacMan->getCellY() == pacMan->getDestinationY()) ||
+       (pacMan->getCellX() == pacMan->moves_true[moveNum].first && pacMan->getCellY() == pacMan->moves_true[moveNum].second)) {
+        // Next Destination
+        moveNum++;
+        pacMan->setPacmanDecision(true);
+        logger->log(to_string(moveNum));
+    }
+    if(maze->isMazeIntersection(pacMan->getCellX(), pacMan->getCellY())) {
+        if(pacMan->isPacmanDecision()) {
+            float distanceRight = calculatePacmanDistance(1, 0);
+            float distanceLeft = calculatePacmanDistance(-1, 0);
+            float distanceUp = calculatePacmanDistance(0, -1);
+            float distanceDown = calculatePacmanDistance(0, 1);
+
+            if (distanceRight < distanceLeft && distanceRight < distanceUp && distanceRight < distanceDown)
+                pacMan->setDirection(Direction::RIGHT);
+            else if (distanceLeft < distanceRight && distanceLeft < distanceUp && distanceLeft < distanceDown)
+                pacMan->setDirection(Direction::LEFT);
+            else if (distanceUp < distanceLeft && distanceUp < distanceRight && distanceUp < distanceDown)
+                pacMan->setDirection(Direction::UP);
+            else if (distanceDown < distanceLeft && distanceDown < distanceUp && distanceDown < distanceRight)
+                pacMan->setDirection(Direction::DOWN);
+        }
+        pacMan->setPacmanDecision(false);
+    }
+    else {
+        pacMan->setPacmanDecision(true);
+    }
+
+    if(isPacManMovementAllowed() && !pacMan->isPacmanDead())
+        pacMan->movePacman();
+    else
+        pacMan->setPacmanDecision(true);
 }
 
 /**
@@ -440,3 +473,4 @@ void GamePlay::stopSirenAndLoop(Sounds sound, bool isLoop, int volume) {
         continue;
     audioManager->playSound(Sounds::Siren, true, VOLUME_SIREN);
 }
+

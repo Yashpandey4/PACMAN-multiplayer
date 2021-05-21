@@ -25,6 +25,7 @@ private:
     AudioManager* audioManager;
 
     int waitTime;
+    int moveNum;
 
     bool isPacManMovementAllowed();
 
@@ -54,6 +55,12 @@ public:
     void setChaseBehaviour();
 
     void stopSirenAndLoop(Sounds sound, bool isLoop, int volume);
+
+    void handlePacmanMovement();
+
+    float calculatePacmanDistance(int x, int y);
+
+    void setPacmanMoveBehaviour();
 };
 
 

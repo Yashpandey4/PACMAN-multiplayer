@@ -11,22 +11,37 @@
 
 class PacMan : public Character {
 private:
-    std::queue<Direction> directions;
+    Direction direction;
     int eatenPelletsCount;
     bool pacmanDead;
+    int destinationX;
+    int destinationY;
+    bool pacmanDecision;
 
 public:
-    PacMan();
+
+    const std::vector<std::pair<int,int>> moves_true = {
+            {1, 26},
+            {26, 26},
+            {26,  6},
+            {1, 6},
+            {13, 26}
+    };
+
+    const std::vector<std::pair<int,int>> moves = {
+            {2, 25},
+            {27, 25},
+            {27,  5},
+            {1, 5},
+            {13, 26}
+    };
+
+
+    PacMan(int destinationX, int destinationY);
 
     constexpr static const float PACMAN_SPEED = 0.04f;
 
-    const std::queue<Direction> &getDirections() const;
-
-    void queueDirection(Direction direction);
-
     void movePacman();
-
-    void stopPacman();
 
     void eatPellets();
 
@@ -35,6 +50,20 @@ public:
     bool isPacmanDead() const;
 
     void setPacmanDead(bool pacmanDead);
+
+    void setPacManDestination(int x, int y);
+
+    int getDestinationX() const;
+
+    int getDestinationY() const;
+
+    Direction getDirection() const;
+
+    void setDirection(Direction direction);
+
+    bool isPacmanDecision() const;
+
+    void setPacmanDecision(bool pacmanDecision);
 };
 
 
